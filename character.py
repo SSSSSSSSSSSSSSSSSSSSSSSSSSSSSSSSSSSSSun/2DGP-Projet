@@ -82,7 +82,7 @@ class Character:
                     self.frame = (self.frame + 1) % 3
                     self.clip_l = 16 * self.frame
 
-        if(self.power_up):
+        if self.power_up:
             self.clip_h = 32
             self.h = 128
         else:
@@ -90,8 +90,8 @@ class Character:
             self.h = 64
 
     def attack(self):
-        if self.power_up == 2:
-            if(self.right):
+        if self.power_up == 2 and self.dir * self.lat_speed >= 0:
+            if self.right :
                 objects.append(CharFire(self.x,self.y+self.h/2,1))
             else:
                 objects.append(CharFire(self.x, self.y + self.h / 2, -1))

@@ -1,11 +1,12 @@
 from random import randint
 from character import char
 class Enemy:
-    w = None; h = None # 크기
+    w = None
+    h = None # 크기
     hp = None   # 체력. 0되면 사망
-    def __init__(self,x,y):
-        self.x = x; self.y = y  # 위치
-
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y  # 위치
         self.lat_speed = 0  # 횡방향 속도 / right 방향이 +
         self.lon_speed = 0  # 종방향 속도 / up 방향이 +
         self.lon_accel = 0 # 종방향 가속도
@@ -15,10 +16,11 @@ class Enemy:
         self.frame_wait = 0
 
 class Goomba(Enemy):
-    def __init__(self,x,y):
-        super(Goomba, self).__init__(x,y)
+    def __init__(self, x, y):
+        super(Goomba, self).__init__(x, y)
         self.lat_speed = -0.1
-        self.w =64; self.h = 64
+        self.w = 64
+        self.h = 64
         self.hp = 1
     def attack(self):
         if 1:       #추후 플레이어 시야 안에 들어올 시 움직이는 조건 추가
@@ -34,16 +36,17 @@ class Goomba(Enemy):
         if self.hp == 0 :
             self.frame = 5
         else:
-            self.frame_wait = (self.frame_wait+1)%100
-            if(self.frame_wait == 0):
-                self.frame = (self.frame+1)%2
+            self.frame_wait = (self.frame_wait+1) % 100
+            if self.frame_wait == 0:
+                self.frame = (self.frame+1) % 2
 
 class Turtle(Enemy):
-    def __init__(self,x,y, wing):
-        super(Turtle, self).__init__(x,y)
+    def __init__(self, x, y, wing):
+        super(Turtle, self).__init__(x, y)
         self.lat_speed = -0.1
-        self.wing = wing;   # 날개가 달려 있는지
-        self.w = 64;   self.h = 128
+        self.wing = wing   # 날개가 달려 있는지
+        self.w = 64
+        self.h = 128
         self.hp = 1
     def attack(self):
         if 1:  # 추후 플레이어 시야 안에 들어올 시 움직이는 조건 추가
@@ -61,15 +64,15 @@ class Turtle(Enemy):
             self.frame = 5
         else:
             self.frame_wait = (self.frame_wait + 1) % 100
-            if (self.frame_wait == 0):
-                if(self.wing):
-                    self.frame = (self.frame+1)%2 + 3
+            if self.frame_wait == 0:
+                if self.wing:
+                    self.frame = (self.frame+1) % 2 + 3
                 else:
-                    self.frame = (self.frame+1)%2
+                    self.frame = (self.frame+1) % 2
 
 class Hammer(Enemy):
     def __init__(self,x,y):
-        super(Hammer, self).__init__(x,y)
+        super(Hammer, self).__init__(x, y)
         self.skill_cooltime = 0
         self.w = 64;   self.h = 128
         self.hp = 1
@@ -91,24 +94,24 @@ class Hammer(Enemy):
             self.frame = 5
         else:
             self.frame_wait = (self.frame_wait + 1) % 100
-            if (self.frame_wait == 0):
+            if self.frame_wait == 0:
                 self.frame = (self.frame+1)%4
 
 class Boss(Enemy):
-    def __init__(self,x,y):
-        super(Boss, self).__init__(x,y)
+    def __init__(self, x, y):
+        super(Boss, self).__init__(x, y)
         self.hp = 20
-        self.skill_cooltime=0
+        self.skill_cooltime = 0
         self.w = 128;   self.h = 128
     def attack(self):
         if 1:  # 추후 플레이어 시야 안에 들어올 시 움직이는 조건 추가
             self.x = self.x + self.lat_speed
-            if (self.right == 0 ) and (char.x > self.x):
+            if self.right == 0  and char.x > self.x:
                 self.right = True
-            elif(self.right == 1) and (char.x < self.x):
+            elif self.right == 1 and char.x < self.x:
                 self.right = False
 
-            self.skill_cooltime = (self.skill_cooltime + 1)%1000
+            self.skill_cooltime = (self.skill_cooltime + 1) % 1000
             if self.skill_cooltime==0 :
                 i = randint(0, 3)
                 if i==0:
@@ -125,7 +128,7 @@ class Boss(Enemy):
             self.frame = 1
         else:
             self.frame_wait = (self.frame_wait + 1) % 1000
-            if (self.frame_wait == 0):
+            if self.frame_wait == 0:
                 self.frame = (self.frame+1)%4
 
-enemys = [Goomba(400,200),Turtle(500,200,False),Hammer(600,200),Boss(700,200)]
+enemys = [Goomba(400,200), Turtle(500,200,False), Hammer(600,200), Boss(700,200)]
