@@ -30,7 +30,6 @@ key_event_table = {
 class IdleState:
 
     def enter(character, event):
-        print('enterIdle')
         if character.dir == 0 and not (event == None) and not (event == X_UP):
             character.cur_state = RunState
             RunState.enter(character,event)
@@ -265,34 +264,43 @@ class Character:
         self.x, self.y = 1600 // 2, 90
         self.image = load_image('resource\\Character_sprite.png')
         self.x = 200
-        self.y = 200  # 위치
+        self.y = 550  # 위치
         self.w = 1 * PIXEL_PER_METER
         self.h = 1 * PIXEL_PER_METER # 크기
         self.dir = 0  # 이동하려는 방향. 1 = right/-1 = left
         self.lat_speed = 0  # 횡방향 속도 / right 방향이 +
         self.lat_accel = 0  # 횡방향 가속도
         self.lon_speed = 0  # 종방향 속도 / up 방향이 +
-        self.lon_accel = 0  # 종방향 가속도
+        self.lon_accel = -0.1475  # 종방향 가속도
         self.power_up = 0  # 파워업 상태
         self.right = True  # 우측방향을 바라보고 있는지
+        self.jump_timer = 0
         self.frame = 0
-        self.frame_wait = 0
         self.event_que = []
         self.cur_state = IdleState
         self.cur_state.enter(self, None)
 
-
+    def get_bb(self):
+        return self.x - self.w / 2, self.y - self.h / 2, self.x + self.w / 2, self.y + self.h / 2
 
     def add_event(self, event):
         self.event_que.insert(0, event)
 
     def attack(self):
         fire = CharFire(self.x, self.y, self.right)
-        main_state.move_object.append(fire)
+        main_state.char_fires.append(fire)
         game_world.add_object(fire, 1)
 
     def update(self):
         self.cur_state.do(self)
+
+        if self.lon_accel!=0:
+            self.lon_speed = self.lon_speed + self.lon_accel + game_framework.frame_time
+            if self.lon_speed < -98: self.lon_speed = -98
+            self.y = self.y + PIXEL_PER_METER * self.lon_speed * game_framework.frame_time
+        if self.jump_timer != 0:
+            self.jump_timer -= 1
+
         if len(self.event_que) > 0:
             event = self.event_que.pop()
             self.cur_state.exit(self, event)
@@ -305,5 +313,15 @@ class Character:
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:
             key_event = key_event_table[(event.type, event.key)]
+
             if self.cur_state in next_state_table and key_event in next_state_table[self.cur_state]:
                 self.add_event(key_event)
+
+        elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_z) and self.lon_accel == 0 and self.lon_speed == 0:
+            self.y += 1
+            self.lon_accel = 18.4375
+            self.jump_timer = 60
+        elif (event.type, event.key) == (SDL_KEYUP, SDLK_z) and self.jump_timer != 0:
+            print(self.jump_timer)
+            self.lon_accel -= 0.1475 * self.jump_timer
+            self.jump_timer = 0

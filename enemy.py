@@ -38,6 +38,9 @@ class Goomba(Enemy):
         self.h = 1 * PIXEL_PER_METER
         self.hp = 1
 
+    def get_bb(self):
+        return self.x-self.w/2, self.y-self.h/2, self.x+self.w/2, self.y+self.h/2
+
     def update(self):
         if 1:       #추후 플레이어 시야 안에 들어올 시 움직이는 조건 추가
             if 0:    # 추후 벽에 부딪힐시 반대로 움직이는 조건 추가
@@ -66,6 +69,10 @@ class Turtle(Enemy):
         self.w = 1  * PIXEL_PER_METER
         self.h = 2 * PIXEL_PER_METER
         self.hp = 1
+
+    def get_bb(self):
+        return self.x-self.w/2, self.y-self.h/2, self.x+self.w/2, self.y+self.h/4
+
     def update(self):
         if 1:  # 추후 플레이어 시야 안에 들어올 시 움직이는 조건 추가
             if 0:    # 추후 벽에 부딪힐시 반대로 움직이는 조건 추가
@@ -95,6 +102,10 @@ class Hammer(Enemy):
         self.w = 1 * PIXEL_PER_METER
         self.h = 2 * PIXEL_PER_METER
         self.hp = 1
+
+    def get_bb(self):
+        return self.x - self.w / 2, self.y - self.h / 2, self.x + self.w / 2, self.y + self.h / 4
+
     def update(self):
         if 1:  # 추후 플레이어 시야 안에 들어올 시 움직이는 조건 추가
             if (self.right == 0) and (game_world.objects[4][0].x > self.x):
@@ -127,6 +138,10 @@ class Boss(Enemy):
         self.skill_cooltime = 0
         self.w = 2 * PIXEL_PER_METER
         self.h = 2 * PIXEL_PER_METER
+
+    def get_bb(self):
+        return self.x-self.w/2, self.y-self.h/2, self.x+self.w/2, self.y+self.h/2
+
     def update(self):
         if 1:  # 추후 플레이어 시야 안에 들어올 시 움직이는 조건 추가
             self.x = self.x + self.lat_speed

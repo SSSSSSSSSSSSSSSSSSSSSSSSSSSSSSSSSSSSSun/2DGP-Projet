@@ -6,7 +6,6 @@
 # layer 4: Character
 objects = [[],[],[],[],[]]
 
-
 def add_object(o, layer):
     objects[layer].append(o)
 
