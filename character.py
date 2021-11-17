@@ -12,7 +12,7 @@ MAX_SPEED_MPS = 5
 
 
 # Action Speed
-TIME_PER_ACTION = 0.05
+TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 3
 
@@ -90,10 +90,17 @@ class IdleState:
         character.frame = 0
 
     def draw(character):
-        if character.right:
-            character.image.clip_draw(0,144,16, 16,character.x, character.y, character.w, character.h)
+        if character.power_up:
+            if character.right:
+                character.image.clip_draw(0,144-character.power_up*32,16, 32,character.x - main_state.camera_left, character.y, character.w, character.h)
+            else:
+                character.image.clip_draw(320, 64-character.power_up*32, 16,32, character.x - main_state.camera_left, character.y, character.w, character.h )
+
         else:
-            character.image.clip_draw(320, 64, 16,16, character.x, character.y, character.w, character.h )
+            if character.right:
+                character.image.clip_draw(0,144,16, 16,character.x - main_state.camera_left, character.y, character.w, character.h)
+            else:
+                character.image.clip_draw(320, 64, 16,16, character.x - main_state.camera_left, character.y, character.w, character.h )
 
 
 class RunState:
@@ -153,26 +160,43 @@ class RunState:
         character.frame = (character.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)%3 + 1
 
     def draw(character):
-        if character.dir != 0:
-            if character.lat_speed / character.dir > 0:
-                if character.right:
-                    character.image.clip_draw(int(character.frame) * 16, 144, 16, 16, character.x, character.y,
-                                              character.w,
-                                              character.h)
+        if character.power_up:
+            if character.dir != 0:
+                if character.lat_speed / character.dir > 0:
+                    if character.right:
+                        character.image.clip_draw(int(character.frame) * 16, 144-character.power_up*32, 16, 32, character.x - main_state.camera_left, character.y, character.w, character.h)
+                    else:
+                        character.image.clip_draw(320 - int(character.frame) * 16, 64-character.power_up*32, 16, 32, character.x - main_state.camera_left, character.y,character.w, character.h)
                 else:
-                    character.image.clip_draw(320 - int(character.frame) * 16, 64, 16, 16, character.x, character.y,
-                                              character.w, character.h)
+                    if character.right:
+                        character.image.clip_draw(4 * 16, 144-character.power_up*32, 16, 32, character.x - main_state.camera_left, character.y, character.w, character.h)
+                    else:
+                        character.image.clip_draw(320 - 4 * 16, 64-character.power_up*32, 16, 32, character.x - main_state.camera_left,  character.y, character.w,
+                                                  character.h)
             else:
                 if character.right:
-                    character.image.clip_draw(4 * 16, 144, 16, 16, character.x, character.y, character.w, character.h)
+                    character.image.clip_draw(4 * 16, 144-character.power_up*32 ,16, 32, character.x - main_state.camera_left, character.y, character.w, character.h)
                 else:
-                    character.image.clip_draw(320 - 4 * 16, 64, 16, 16, character.x, character.y, character.w,
-                                              character.h)
+                    character.image.clip_draw(320 - 4 * 16, 64-character.power_up*32, 16, 32, character.x - main_state.camera_left, character.y, character.w, character.h)
+
         else:
-            if character.right:
-                character.image.clip_draw(4 * 16, 144, 16, 16, character.x, character.y, character.w, character.h)
+            if character.dir != 0:
+                if character.lat_speed / character.dir > 0:
+                    if character.right:
+                        character.image.clip_draw(int(character.frame) * 16, 144, 16, 16, character.x - main_state.camera_left, character.y, character.w, character.h)
+                    else:
+                        character.image.clip_draw(320 - int(character.frame) * 16, 64, 16, 16, character.x - main_state.camera_left, character.y,character.w, character.h)
+                else:
+                    if character.right:
+                        character.image.clip_draw(4 * 16, 144, 16, 16, character.x - main_state.camera_left, character.y, character.w, character.h)
+                    else:
+                        character.image.clip_draw(320 - 4 * 16, 64, 16, 16, character.x - main_state.camera_left,  character.y, character.w,
+                                                  character.h)
             else:
-                character.image.clip_draw(320 - 4 * 16, 64, 16, 16, character.x, character.y, character.w, character.h)
+                if character.right:
+                    character.image.clip_draw(4 * 16, 144, 16, 16, character.x - main_state.camera_left, character.y, character.w, character.h)
+                else:
+                    character.image.clip_draw(320 - 4 * 16, 64, 16, 16, character.x - main_state.camera_left, character.y, character.w, character.h)
 
 
 class DashState:
@@ -180,7 +204,7 @@ class DashState:
         if character.lat_speed == 0 and event == X_UP:
             character.cur_state = IdleState
             IdleState.enter(character,event)
-        if character.lat_speed * character.dir >= 0:
+        if character.lat_speed * character.dir >= 0 and character.power_up == 2:
             character.attack()
 
     def exit(character, event):
@@ -232,19 +256,35 @@ class DashState:
         character.frame = (character.frame + FRAMES_PER_ACTION * ACTION_PER_TIME*2 * game_framework.frame_time) % 3 + 1
 
     def draw(character):
-        if character.lat_speed == 0:
-            IdleState.draw(character)
-            return
-        if character.lat_speed * character.dir >= 0:
-            if character.right:
-                character.image.clip_draw(int(character.frame) * 16, 144, 16, 16, character.x, character.y, character.w,character.h)
+        if character.power_up:
+            if character.lat_speed == 0:
+                IdleState.draw(character)
+                return
+            if character.lat_speed * character.dir >= 0:
+                if character.right:
+                    character.image.clip_draw(int(character.frame) * 16, 144-character.power_up*32, 16, 32, character.x - main_state.camera_left, character.y, character.w,character.h)
+                else:
+                    character.image.clip_draw(320 - int(character.frame) * 16, 64-character.power_up*32, 16, 32, character.x - main_state.camera_left, character.y,character.w, character.h)
             else:
-                character.image.clip_draw(320 - int(character.frame) * 16, 64, 16, 16, character.x, character.y,character.w, character.h)
+                if character.right:
+                    character.image.clip_draw(4 * 16, 144-character.power_up*32, 16, 32, character.x - main_state.camera_left, character.y, character.w, character.h)
+                else:
+                    character.image.clip_draw(320 - 4 * 16, 64-character.power_up*32, 16, 32, character.x - main_state.camera_left, character.y, character.w, character.h)
+
         else:
-            if character.right:
-                character.image.clip_draw(4 * 16, 144, 16, 16, character.x, character.y, character.w, character.h)
+            if character.lat_speed == 0:
+                IdleState.draw(character)
+                return
+            if character.lat_speed * character.dir >= 0:
+                if character.right:
+                    character.image.clip_draw(int(character.frame) * 16, 144, 16, 16, character.x - main_state.camera_left, character.y, character.w,character.h)
+                else:
+                    character.image.clip_draw(320 - int(character.frame) * 16, 64, 16, 16, character.x - main_state.camera_left, character.y,character.w, character.h)
             else:
-                character.image.clip_draw(320 - 4 * 16, 64, 16, 16, character.x, character.y, character.w, character.h)
+                if character.right:
+                    character.image.clip_draw(4 * 16, 144, 16, 16, character.x - main_state.camera_left, character.y, character.w, character.h)
+                else:
+                    character.image.clip_draw(320 - 4 * 16, 64, 16, 16, character.x - main_state.camera_left, character.y, character.w, character.h)
 
 next_state_table = {
     IdleState: {RIGHT_UP: RunState, LEFT_UP: RunState,
@@ -281,7 +321,7 @@ class Character:
         self.cur_state.enter(self, None)
 
     def get_bb(self):
-        return self.x - self.w / 2, self.y - self.h / 2, self.x + self.w / 2, self.y + self.h / 2
+        return self.x - self.w / 2 - main_state.camera_left, self.y - self.h / 2, self.x + self.w / 2-main_state.camera_left, self.y + self.h / 2
 
     def add_event(self, event):
         self.event_que.insert(0, event)
@@ -300,12 +340,18 @@ class Character:
             self.y = self.y + PIXEL_PER_METER * self.lon_speed * game_framework.frame_time
         if self.jump_timer != 0:
             self.jump_timer -= 1
+        self.x = clamp(main_state.camera_left,self.x,self.x+1)
+        if self.x - main_state.camera_left > 300:
+            main_state.camera_left = self.x - 300
+
 
         if len(self.event_que) > 0:
             event = self.event_que.pop()
-            self.cur_state.exit(self, event)
-            self.cur_state = next_state_table[self.cur_state][event]
-            self.cur_state.enter(self, event)
+            if self.cur_state in next_state_table:
+                if event in next_state_table[self.cur_state]:
+                    self.cur_state.exit(self, event)
+                    self.cur_state = next_state_table[self.cur_state][event]
+                    self.cur_state.enter(self, event)
 
     def draw(self):
         self.cur_state.draw(self)
@@ -319,9 +365,9 @@ class Character:
 
         elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_z) and self.lon_accel == 0 and self.lon_speed == 0:
             self.y += 1
-            self.lon_accel = 18.4375
+            self.lon_accel = 9.8+4.95
             self.jump_timer = 60
         elif (event.type, event.key) == (SDL_KEYUP, SDLK_z) and self.jump_timer != 0:
-            print(self.jump_timer)
+
             self.lon_accel -= 0.1475 * self.jump_timer
             self.jump_timer = 0

@@ -1,8 +1,9 @@
 from random import randint
 
+
 import game_framework
 from pico2d import *
-
+import main_state
 import game_world
 
 PIXEL_PER_METER = (50.0 / 1.0)  # 50 pixel 1meter
@@ -37,29 +38,56 @@ class Goomba(Enemy):
         self.w = 1 * PIXEL_PER_METER
         self.h = 1 * PIXEL_PER_METER
         self.hp = 1
+        self.timer = -1
 
     def get_bb(self):
-        return self.x-self.w/2, self.y-self.h/2, self.x+self.w/2, self.y+self.h/2
+        return self.x-self.w/2- main_state.camera_left, self.y-self.h/2, self.x+self.w/2- main_state.camera_left, self.y+self.h/2
 
     def update(self):
-        if 1:       #추후 플레이어 시야 안에 들어올 시 움직이는 조건 추가
-            if 0:    # 추후 벽에 부딪힐시 반대로 움직이는 조건 추가
-                self.lat_speed = - self.lat_speed
-                self.right = True
-            self.x = self.x + self.lat_speed * RUN_SPEED_PPS * game_framework.frame_time
+        if self.timer==0:
+            main_state.enemys.remove(self)
+            game_world.remove_object(self)
+            del self
+            return
+        elif self.timer > 0:
+            self.timer -= 1
+
+        if self.x < main_state.camera_left - self.w/2:
+            main_state.enemys.remove(self)
+            game_world.remove_object(self)
+            del self
+            return
+
+        if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
+        if self.lon_accel!=0:
+            self.lon_speed = self.lon_speed + self.lon_accel + game_framework.frame_time
+            if self.lon_speed < -98: self.lon_speed = -98
+            self.y = self.y + PIXEL_PER_METER * self.lon_speed * game_framework.frame_time
+        self.x = self.x + self.lat_speed * RUN_SPEED_PPS * game_framework.frame_time
 
         if self.y < -10:    # 추락시
+            main_state.enemys.remove(self)
+            game_world.remove_object(self)
             del self
-
+            return
         if self.hp == 0:
             self.frame = 5
+            if self.timer < 0:
+                self.timer = 100
+        elif self.hp <0 and self.timer < 0: self.timer = 100
         else:
             self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 2
     def draw(self):
+        if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
+
+        if self.hp < 0:
+            self.image.clip_composite_draw(0,240,16,16,-(100-self.timer) * 3.141592 / 270, '', self.x - main_state.camera_left, self.y, self.w, self.h)
+            return
+
         if(self.right):
-            self.image.clip_draw((7-int(self.frame)) * 16, 112, 16, 16, self.x, self.y, self.w, self.h)
+            self.image.clip_draw((7-int(self.frame)) * 16, 112, 16, 16, self.x - main_state.camera_left, self.y, self.w, self.h)
         else:
-            self.image.clip_draw(int(self.frame) * 16, 240, 16, 16, self.x, self.y,self.w,self.h)
+            self.image.clip_draw(int(self.frame) * 16, 240, 16, 16, self.x - main_state.camera_left, self.y,self.w,self.h)
 
 class Turtle(Enemy):
     def __init__(self, x, y, wing):
@@ -69,31 +97,58 @@ class Turtle(Enemy):
         self.w = 1  * PIXEL_PER_METER
         self.h = 2 * PIXEL_PER_METER
         self.hp = 1
-
+        self.timer = -1
     def get_bb(self):
-        return self.x-self.w/2, self.y-self.h/2, self.x+self.w/2, self.y+self.h/4
+        return self.x-self.w/2- main_state.camera_left, self.y-self.h/2, self.x+self.w/2- main_state.camera_left, self.y+self.h/4
 
     def update(self):
-        if 1:  # 추후 플레이어 시야 안에 들어올 시 움직이는 조건 추가
-            if 0:    # 추후 벽에 부딪힐시 반대로 움직이는 조건 추가
-                self.lat_speed = - self.lat_speed
-                self.right = True
-            self.x = self.x + self.lat_speed * RUN_SPEED_PPS  * game_framework.frame_time
-            if 0:   # 추후 날개가 있을 시 점프하는 코드 추가해야함
-                pass# 추후 날개가 있을 시 점프하는 코드 추가해야함
-        if self.y < -10:  # 추락시
+        if self.timer==0:
+            main_state.enemys.remove(self)
+            game_world.remove_object(self)
             del self
+            return
+        elif self.timer > 0:
+            self.timer -= 1
+            self.x += 1
+
+        if self.x < main_state.camera_left - self.w/2:
+            main_state.enemys.remove(self)
+            game_world.remove_object(self)
+            del self
+            return
+        if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
+
+        if self.lon_accel!=0:
+            self.lon_speed = self.lon_speed + self.lon_accel + game_framework.frame_time
+            if self.lon_speed < -98: self.lon_speed = -98
+            self.y = self.y + PIXEL_PER_METER * self.lon_speed * game_framework.frame_time
+        self.x = self.x + self.lat_speed * RUN_SPEED_PPS  * game_framework.frame_time
+        if 0:   # 추후 날개가 있을 시 점프하는 코드 추가해야함
+            pass# 추후 날개가 있을 시 점프하는 코드 추가해야함
+        if self.y < -10:  # 추락시
+            main_state.enemys.remove(self)
+            game_world.remove_object(self)
+            del self
+            return
         if self.hp == 0:
             self.frame = 5
+        elif self.hp < 0 and self.timer <0:
+            self.timer = 100
         else:
             self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 2
             if self.wing:
                 self.frame+=3
     def draw(self):
+        if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
+
+        if self.hp < 0:
+            self.image.clip_composite_draw(0,208,16,32,-(100-self.timer) * 3.141592 / 270, '', self.x - main_state.camera_left, self.y, self.w, self.h)
+            return
+
         if (self.right):
-            self.image.clip_draw((7 - int(self.frame)) * 16, 80, 16, 32, self.x, self.y, self.w, self.h)
+            self.image.clip_draw((7 - int(self.frame)) * 16, 80, 16, 32, self.x - main_state.camera_left, self.y, self.w, self.h)
         else:
-            self.image.clip_draw(int(self.frame) * 16, 208, 16, 32, self.x, self.y, self.w, self.h)
+            self.image.clip_draw(int(self.frame) * 16, 208, 16, 32, self.x - main_state.camera_left, self.y, self.w, self.h)
 
 class Hammer(Enemy):
     def __init__(self,x,y):
@@ -102,34 +157,65 @@ class Hammer(Enemy):
         self.w = 1 * PIXEL_PER_METER
         self.h = 2 * PIXEL_PER_METER
         self.hp = 1
-
+        self.timer = -1
     def get_bb(self):
-        return self.x - self.w / 2, self.y - self.h / 2, self.x + self.w / 2, self.y + self.h / 4
+        return self.x - self.w / 2- main_state.camera_left, self.y - self.h / 2, self.x + self.w / 2- main_state.camera_left, self.y + self.h / 4
 
     def update(self):
-        if 1:  # 추후 플레이어 시야 안에 들어올 시 움직이는 조건 추가
-            if (self.right == 0) and (game_world.objects[4][0].x > self.x):
-                self.right = True
-            elif (self.right == 1) and (game_world.objects[4][0].x < self.x):
-                self.right = False
-            self.skill_cooltime = (self.skill_cooltime + 1) % 100
-            if self.skill_cooltime == 0:
-                pass #물건 투척
-            if (self.skill_cooltime+randint(1,100+1))%10 == 0:
-                pass #점프하는 코드 추가
-        if self.y < -10:  # 추락시
-            del self
 
+        if self.timer==0:
+            main_state.enemys.remove(self)
+            game_world.remove_object(self)
+            del self
+            return
+        elif self.timer > 0:
+            self.timer -= 1
+            self.x += 1
+
+
+        if self.x < main_state.camera_left - self.w/2:
+            main_state.enemys.remove(self)
+            game_world.remove_object(self)
+            del self
+            return
+        if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
+
+        if self.lon_accel!=0:
+            self.lon_speed = self.lon_speed + self.lon_accel + game_framework.frame_time
+            if self.lon_speed < -98: self.lon_speed = -98
+            self.y = self.y + PIXEL_PER_METER * self.lon_speed * game_framework.frame_time
+
+        if (self.right == 0) and (game_world.objects[4][0].x > self.x):
+            self.right = True
+        elif (self.right == 1) and (game_world.objects[4][0].x < self.x):
+            self.right = False
+        self.skill_cooltime = (self.skill_cooltime + 1) % 100
+        if self.skill_cooltime == 0:
+            pass #물건 투척
+        if (self.skill_cooltime+randint(1,100+1))%10 == 0:
+            pass #점프하는 코드 추가
+        if self.y < -10:  # 추락시
+            main_state.enemys.remove(self)
+            game_world.remove_object(self)
+            del self
+            return
         if self.hp == 0:
             self.frame = 5
+        elif self.timer < 0 and self.hp < 0:
+            self.timer = 100
         else:
             self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 2
     def draw(self):
+        if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
 
-        if (self.right):
-            self.image.clip_draw((7 - int(self.frame)) * 16, 32, 16, 32, self.x, self.y, self.w, self.h)
+        if self.hp < 0:
+            self.image.clip_composite_draw(0,160,16,32,-(100-self.timer) * 3.141592 / 270, '', self.x - main_state.camera_left, self.y, self.w, self.h)
+            return
+
+        if self.right:
+            self.image.clip_draw((7 - int(self.frame)) * 16, 32, 16, 32, self.x -  main_state.camera_left, self.y, self.w, self.h)
         else:
-            self.image.clip_draw(int(self.frame) * 16, 160, 16, 32, self.x, self.y, self.w, self.h)
+            self.image.clip_draw(int(self.frame) * 16, 160, 16, 32, self.x - main_state.camera_left, self.y, self.w, self.h)
 
 class Boss(Enemy):
     def __init__(self, x, y):
@@ -140,37 +226,52 @@ class Boss(Enemy):
         self.h = 2 * PIXEL_PER_METER
 
     def get_bb(self):
-        return self.x-self.w/2, self.y-self.h/2, self.x+self.w/2, self.y+self.h/2
+        return self.x-self.w/2- main_state.camera_left, self.y-self.h/2, self.x+self.w/2- main_state.camera_left, self.y+self.h/2
 
     def update(self):
-        if 1:  # 추후 플레이어 시야 안에 들어올 시 움직이는 조건 추가
-            self.x = self.x + self.lat_speed
-            if self.right == 0  and game_world.objects[4][0].x > self.x:
-                self.right = True
-            elif self.right == 1 and game_world.objects[4][0].x < self.x:
-                self.right = False
+        if self.x < main_state.camera_left - self.w/2:
+            main_state.enemys.remove(self)
+            game_world.remove_object(self)
+            del self
+            return
+        if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
 
-            self.skill_cooltime = (self.skill_cooltime + 1) % 1000
-            if self.skill_cooltime==0 :
-                i = randint(0, 3)
-                if i==0:
-                    pass #불쏘는 코드
-                elif i==1:
-                    pass  # 점프하는 코드
-                else:
-                    pass  # 큰점프하는 코드
+        if self.lon_accel!=0:
+            self.lon_speed = self.lon_speed + self.lon_accel + game_framework.frame_time
+            if self.lon_speed < -98: self.lon_speed = -98
+            self.y = self.y + PIXEL_PER_METER * self.lon_speed * game_framework.frame_time
+
+        self.x = self.x + self.lat_speed
+        if self.right == 0  and game_world.objects[4][0].x > self.x:
+            self.right = True
+        elif self.right == 1 and game_world.objects[4][0].x < self.x:
+            self.right = False
+        self.skill_cooltime = (self.skill_cooltime + 1) % 500
+        if self.skill_cooltime==0 :
+            i = randint(0,2)
+
+            if i==0:
+                pass #불쏘는 코드
+            elif i==1:
+                self.y += 1
+                self.lon_speed = 10
+            else:
+                self.y += 1
+                self.lon_speed = 15
             
         if self.y < -10:  # 추락시
-           del self
-
+            main_state.enemys.remove(self)
+            game_world.remove_object(self)
+            del self
+            return
         if self.hp == 0:
             self.frame = 1
         else:
             self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
     def draw(self):
-
+        if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
         if (self.right):
-            self.image.clip_draw((6 - int(self.frame)*2) * 16, 0, 32, 32, self.x, self.y, self.w, self.h)
+            self.image.clip_draw((6 - int(self.frame)*2) * 16, 0, 32, 32, self.x - main_state.camera_left, self.y, self.w, self.h)
         else:
-            self.image.clip_draw(int(self.frame) * 32, 128, 32, 32, self.x, self.y, self.w, self.h)
+            self.image.clip_draw(int(self.frame) * 32, 128, 32, 32, self.x -main_state.camera_left, self.y, self.w, self.h)
 
