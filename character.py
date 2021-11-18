@@ -315,6 +315,7 @@ class Character:
         self.power_up = 0  # 파워업 상태
         self.right = True  # 우측방향을 바라보고 있는지
         self.jump_timer = 0
+        self.no_damege_timer = 0
         self.frame = 0
         self.event_que = []
         self.cur_state = IdleState
@@ -340,6 +341,8 @@ class Character:
             self.y = self.y + PIXEL_PER_METER * self.lon_speed * game_framework.frame_time
         if self.jump_timer != 0:
             self.jump_timer -= 1
+        if self.no_damege_timer != 0:
+            self.no_damege_timer -= 1
         self.x = clamp(main_state.camera_left,self.x,self.x+1)
         if self.x - main_state.camera_left > 300:
             main_state.camera_left = self.x - 300

@@ -1,6 +1,8 @@
 import main_state
 import game_world
 
+PIXEL_PER_METER = (50.0 / 1.0)
+
 def collide(a, b):
     left_a, bottom_a, right_a, top_a = a.get_bb()
     left_b, bottom_b, right_b, top_b = b.get_bb()
@@ -44,8 +46,15 @@ def collide_enemy(a, enemy):
         a.lon_speed = 10
         enemy.hp -=1
     else:
-        #사망
-        print("사망")
+        if a.no_damege_timer==0:
+            if a.power_up:
+                a.no_damege_timer = 1000
+                a.power_up -= 1
+                if not a.power_up:
+                    a.h =1.0 * PIXEL_PER_METER
+
+        else:
+            pass #사망
 
 def collide_fire_block(fire, block):
     left_a, bottom_a, right_a, top_a = fire.get_bb()

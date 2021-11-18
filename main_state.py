@@ -37,7 +37,7 @@ def enter():
     global character
     character = Character()
     global enemys
-    enemys = [Goomba(800,230), Turtle(1000,230,False), Hammer(800,230), Boss(800,330)]
+    enemys = [Goomba(800,230), Turtle(1000,230,False), Boss(600,330)]
     global objects
     objects = []
     global blocks
