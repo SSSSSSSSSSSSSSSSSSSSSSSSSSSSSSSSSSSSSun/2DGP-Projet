@@ -2,6 +2,7 @@ import game_framework
 from pico2d import *
 import main_state
 import game_world
+import server
 from object import *
 PIXEL_PER_METER = (50.0 / 1.0)  # 50 pixel 1meter
 
@@ -27,13 +28,11 @@ class Platform(Block):
         self.h = 1 * PIXEL_PER_METER
         self.type = type
     def get_bb(self):
-        return self.x-self.w/2- main_state.camera_left, self.y-self.h/2, self.x+self.w/2- main_state.camera_left, self.y+self.h/2
+        return self.x-self.w/2, self.y-self.h/2, self.x+self.w/2, self.y+self.h/2
     def update(self):
         if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
         if self.x < main_state.camera_left - self.w/2:
-            main_state.blocks[self.x].remove(self)
-            game_world.remove_object(self)
-            del self
+            self.del_self()
             return
     def do(self):
         pass
@@ -44,6 +43,10 @@ class Platform(Block):
             self.image.clip_draw(0,128-main_state.stage*16,16,16,self.x - main_state.camera_left,self.y,self.w,self.h)
         if self.type == 1:
             self.image.clip_draw(48,128-main_state.stage*16,16,16,self.x - main_state.camera_left,self.y,self.w,self.h)
+    def del_self(self):
+        server.blocks[self.x].remove(self)
+        game_world.remove_object(self)
+        del self
 
 class Brick(Block):
     def __init__(self,x,y, type):
@@ -52,19 +55,21 @@ class Brick(Block):
         self.h = 1 * PIXEL_PER_METER
         self.type = type # 1번 : 윗벽돌 / 2번 : 중간 벽돌
     def get_bb(self):
-        return self.x-self.w/2- main_state.camera_left, self.y-self.h/2, self.x+self.w/2- main_state.camera_left, self.y+self.h/2
+        return self.x-self.w/2, self.y-self.h/2, self.x+self.w/2, self.y+self.h/2
     def update(self):
         if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
         if self.x < main_state.camera_left - self.w/2:
-            main_state.blocks[self.x].remove(self)
-            game_world.remove_object(self)
-            del self
+            self.del_self()
             return
     def do(self):
         pass
     def draw(self):
         if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
         self.image.clip_draw(16+self.type*16,128-main_state.stage*16,16,16,self.x - main_state.camera_left,self.y,self.w,self.h)
+    def del_self(self):
+        server.blocks[self.x].remove(self)
+        game_world.remove_object(self)
+        del self
 
 class Box(Block):
     def __init__(self,x,y,l):
@@ -74,20 +79,18 @@ class Box(Block):
         self.contents = [] + l
         self.frame = 0
     def get_bb(self):
-        return self.x-self.w/2- main_state.camera_left, self.y-self.h/2, self.x+self.w/2- main_state.camera_left, self.y+self.h/2
+        return self.x-self.w/2, self.y-self.h/2, self.x+self.w/2, self.y+self.h/2
     def update(self):
         if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
         if self.x < main_state.camera_left - self.w/2:
-            main_state.blocks[self.x].remove(self)
-            game_world.remove_object(self)
-            del self
+            self.del_self()
             return
 
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
     def do(self):
         if len(self.contents) > 0:
             item = self.contents.pop()
-            main_state.objects.append(item)
+            server.objects.append(item)
             game_world.add_object(item,1)
     def draw(self):
         if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
@@ -95,6 +98,10 @@ class Box(Block):
             self.image.clip_draw(int(self.frame)*16,48,16,16,self.x - main_state.camera_left,self.y,self.w,self.h)
         else:
             self.image.clip_draw(48,0,16,16,self.x - main_state.camera_left,self.y,self.w,self.h)
+    def del_self(self):
+        server.blocks[self.x].remove(self)
+        game_world.remove_object(self)
+        del self
 
 class Coin(Block):
     def __init__(self,x,y):
@@ -107,9 +114,7 @@ class Coin(Block):
     def update(self):
         if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
         if self.x < main_state.camera_left - self.w/2:
-            main_state.blocks[self.x].remove(self)
-            game_world.remove_object(self)
-            del self
+            self.del_self()
             return
 
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
@@ -118,3 +123,7 @@ class Coin(Block):
     def draw(self):
         if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
         self.image.clip_draw(int(self.frame)*16,32,16,16,self.x - main_state.camera_left,self.y,self.w,self.h)
+    def del_self(self):
+        server.blocks[self.x].remove(self)
+        game_world.remove_object(self)
+        del self

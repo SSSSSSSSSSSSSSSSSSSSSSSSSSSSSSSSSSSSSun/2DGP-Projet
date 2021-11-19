@@ -5,6 +5,7 @@ import game_framework
 from pico2d import *
 import main_state
 import game_world
+import server
 
 PIXEL_PER_METER = (50.0 / 1.0)  # 50 pixel 1meter
 RUN_SPEED_MPS = 10
@@ -35,27 +36,23 @@ class Goomba(Enemy):
     def __init__(self, x, y):
         super(Goomba, self).__init__(x, y)
         self.lat_speed = -0.1
-        self.w = 1 * PIXEL_PER_METER
-        self.h = 1 * PIXEL_PER_METER
+        self.w = 0.9 * PIXEL_PER_METER
+        self.h = 0.9 * PIXEL_PER_METER
         self.hp = 1
         self.timer = -1
 
     def get_bb(self):
-        return self.x-self.w/2- main_state.camera_left, self.y-self.h/2, self.x+self.w/2- main_state.camera_left, self.y+self.h/2
+        return self.x-self.w/2, self.y-self.h/2, self.x+self.w/2, self.y+self.h/2
 
     def update(self):
         if self.timer==0:
-            main_state.enemys.remove(self)
-            game_world.remove_object(self)
-            del self
+            self.del_self()
             return
         elif self.timer > 0:
             self.timer -= 1
 
         if self.x < main_state.camera_left - self.w/2:
-            main_state.enemys.remove(self)
-            game_world.remove_object(self)
-            del self
+            self.del_self()
             return
 
         if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
@@ -66,9 +63,7 @@ class Goomba(Enemy):
         self.x = self.x + self.lat_speed * RUN_SPEED_PPS * game_framework.frame_time
 
         if self.y < -10:    # 추락시
-            main_state.enemys.remove(self)
-            game_world.remove_object(self)
-            del self
+            self.del_self()
             return
         if self.hp == 0:
             self.frame = 5
@@ -89,32 +84,33 @@ class Goomba(Enemy):
         else:
             self.image.clip_draw(int(self.frame) * 16, 240, 16, 16, self.x - main_state.camera_left, self.y,self.w,self.h)
 
+    def del_self(self):
+            server.enemys.remove(self)
+            game_world.remove_object(self)
+            del self
+
 class Turtle(Enemy):
     def __init__(self, x, y, wing):
         super(Turtle, self).__init__(x, y)
         self.lat_speed = -0.1
         self.wing = wing   # 날개가 달려 있는지
-        self.w = 1  * PIXEL_PER_METER
-        self.h = 2 * PIXEL_PER_METER
+        self.w = 0.9  * PIXEL_PER_METER
+        self.h = 2 * 0.9 * PIXEL_PER_METER
         self.hp = 1
         self.timer = -1
     def get_bb(self):
-        return self.x-self.w/2- main_state.camera_left, self.y-self.h/2, self.x+self.w/2- main_state.camera_left, self.y+self.h/4
+        return self.x-self.w/2, self.y-self.h/2, self.x+self.w/2, self.y+self.h/4
 
     def update(self):
         if self.timer==0:
-            main_state.enemys.remove(self)
-            game_world.remove_object(self)
-            del self
+            self.del_self()
             return
         elif self.timer > 0:
             self.timer -= 1
             self.x += 1
 
         if self.x < main_state.camera_left - self.w/2:
-            main_state.enemys.remove(self)
-            game_world.remove_object(self)
-            del self
+            self.del_self()
             return
         if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
 
@@ -126,9 +122,7 @@ class Turtle(Enemy):
         if 0:   # 추후 날개가 있을 시 점프하는 코드 추가해야함
             pass# 추후 날개가 있을 시 점프하는 코드 추가해야함
         if self.y < -10:  # 추락시
-            main_state.enemys.remove(self)
-            game_world.remove_object(self)
-            del self
+            self.del_self()
             return
         if self.hp == 0:
             self.frame = 5
@@ -149,24 +143,26 @@ class Turtle(Enemy):
             self.image.clip_draw((7 - int(self.frame)) * 16, 80, 16, 32, self.x - main_state.camera_left, self.y, self.w, self.h)
         else:
             self.image.clip_draw(int(self.frame) * 16, 208, 16, 32, self.x - main_state.camera_left, self.y, self.w, self.h)
+    def del_self(self):
+            server.enemys.remove(self)
+            game_world.remove_object(self)
+            del self
 
 class Hammer(Enemy):
     def __init__(self,x,y):
         super(Hammer, self).__init__(x, y)
         self.skill_cooltime = 0
-        self.w = 1 * PIXEL_PER_METER
-        self.h = 2 * PIXEL_PER_METER
+        self.w = 0.9 * PIXEL_PER_METER
+        self.h = 2 * 0.9 * PIXEL_PER_METER
         self.hp = 1
         self.timer = -1
     def get_bb(self):
-        return self.x - self.w / 2- main_state.camera_left, self.y - self.h / 2, self.x + self.w / 2- main_state.camera_left, self.y + self.h / 4
+        return self.x - self.w / 2, self.y - self.h / 2, self.x + self.w / 2, self.y + self.h / 4
 
     def update(self):
 
         if self.timer==0:
-            main_state.enemys.remove(self)
-            game_world.remove_object(self)
-            del self
+            self.del_self()
             return
         elif self.timer > 0:
             self.timer -= 1
@@ -174,9 +170,7 @@ class Hammer(Enemy):
 
 
         if self.x < main_state.camera_left - self.w/2:
-            main_state.enemys.remove(self)
-            game_world.remove_object(self)
-            del self
+            self.del_self()
             return
         if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
 
@@ -195,9 +189,7 @@ class Hammer(Enemy):
         if (self.skill_cooltime+randint(1,100+1))%10 == 0:
             pass #점프하는 코드 추가
         if self.y < -10:  # 추락시
-            main_state.enemys.remove(self)
-            game_world.remove_object(self)
-            del self
+            self.del_self()
             return
         if self.hp == 0:
             self.frame = 5
@@ -216,23 +208,25 @@ class Hammer(Enemy):
             self.image.clip_draw((7 - int(self.frame)) * 16, 32, 16, 32, self.x -  main_state.camera_left, self.y, self.w, self.h)
         else:
             self.image.clip_draw(int(self.frame) * 16, 160, 16, 32, self.x - main_state.camera_left, self.y, self.w, self.h)
+    def del_self(self):
+            server.enemys.remove(self)
+            game_world.remove_object(self)
+            del self
 
 class Boss(Enemy):
     def __init__(self, x, y):
         super(Boss, self).__init__(x, y)
         self.hp = 20
         self.skill_cooltime = 0
-        self.w = 2 * PIXEL_PER_METER
-        self.h = 2 * PIXEL_PER_METER
+        self.w = 2 * 0.9 * PIXEL_PER_METER
+        self.h = 2 * 0.9 * PIXEL_PER_METER
 
     def get_bb(self):
-        return self.x-self.w/2- main_state.camera_left, self.y-self.h/2, self.x+self.w/2- main_state.camera_left, self.y+self.h/2
+        return self.x-self.w/2, self.y-self.h/2, self.x+self.w/2, self.y+self.h/2
 
     def update(self):
         if self.x < main_state.camera_left - self.w/2:
-            main_state.enemys.remove(self)
-            game_world.remove_object(self)
-            del self
+            self.del_self()
             return
         if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
 
@@ -260,9 +254,7 @@ class Boss(Enemy):
                 self.lon_speed = 15
             
         if self.y < -10:  # 추락시
-            main_state.enemys.remove(self)
-            game_world.remove_object(self)
-            del self
+            self.del_self()
             return
         if self.hp == 0:
             self.frame = 1
@@ -274,4 +266,7 @@ class Boss(Enemy):
             self.image.clip_draw((6 - int(self.frame)*2) * 16, 0, 32, 32, self.x - main_state.camera_left, self.y, self.w, self.h)
         else:
             self.image.clip_draw(int(self.frame) * 32, 128, 32, 32, self.x -main_state.camera_left, self.y, self.w, self.h)
-
+    def del_self(self):
+            server.enemys.remove(self)
+            game_world.remove_object(self)
+            del self

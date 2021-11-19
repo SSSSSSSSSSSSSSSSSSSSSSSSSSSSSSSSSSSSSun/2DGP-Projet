@@ -3,6 +3,8 @@ from pico2d import *
 from character import *
 import main_state
 import game_world
+import server
+
 
 PIXEL_PER_METER = (50.0 / 1.0)  # 50 pixel 1meter
 
@@ -39,15 +41,13 @@ class CharFire(Object):
         else: self.dir = -1
 
     def get_bb(self):
-        return self.x - self.w / 2- main_state.camera_left, self.y - self.h / 2, self.x + self.w / 2- main_state.camera_left, self.y + self.h / 2
+        return self.x - self.w / 2, self.y - self.h / 2, self.x + self.w / 2, self.y + self.h / 2
 
     def update(self):
         self.x = self.x + self.dir * CHARFIRE_SPEED_PPS * game_framework.frame_time
 
         if self.x < main_state.camera_left - self.w/2 or main_state.camera_left + 800+self.w/2 < self.x or self.y < -10:  # 추락 혹은 맵 이탈시
-            main_state.char_fires.remove(self)
-            game_world.remove_object(self)
-            del self
+            self.del_self()
             return
 
         if self.lon_accel!=0:
@@ -58,6 +58,10 @@ class CharFire(Object):
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
     def draw(self):
         self.image.clip_draw((4 + int(self.frame))*16,0,8,8,self.x - main_state.camera_left,self.y,self.w,self.h)
+    def del_self(self):
+        server.char_fires.remove(self)
+        game_world.remove_object(self)
+        del self
 
 class Mushroom(Object):
     def __init__(self, x, y):
@@ -69,7 +73,7 @@ class Mushroom(Object):
         self.lon_accel = -0.1475
 
     def get_bb(self):
-        return self.x - self.w / 2- main_state.camera_left, self.y - self.h / 2, self.x + self.w / 2- main_state.camera_left, self.y + self.h / 2
+        return self.x - self.w / 2, self.y - self.h / 2, self.x + self.w / 2, self.y + self.h / 2
 
     def update(self):
         if self.timer >0:
@@ -80,9 +84,7 @@ class Mushroom(Object):
         self.x = self.x + self.lat_speed * game_framework.frame_time
 
         if self.x < main_state.camera_left - self.w/2 or main_state.camera_left + 800+self.w/2 < self.x or self.y < -10:  # 추락 혹은 맵 이탈시
-            main_state.objects.remove(self)
-            game_world.remove_object(self)
-            del self
+            self.del_self()
             return
 
         if self.lon_accel!=0:
@@ -93,13 +95,16 @@ class Mushroom(Object):
     def do(self, character):
         if(character.power_up == 0):
             character.power_up = 1
-            character.h = 2 * PIXEL_PER_METER
-        main_state.objects.remove(self)
-        game_world.remove_object(self)
-        del self
+            character.h *= 2
+        self.del_self()
         return
     def draw(self):
         self.image.clip_draw(0, 64,16,16,self.x - main_state.camera_left,self.y,self.w,self.h)
+    def del_self(self):
+        server.objects.remove(self)
+        game_world.remove_object(self)
+        del self
+
 
 class Flower(Object):
     def __init__(self, x, y):
@@ -109,7 +114,7 @@ class Flower(Object):
         self.timer = 50
         self.frame = 0
     def get_bb(self):
-        return self.x - self.w / 2- main_state.camera_left, self.y - self.h / 2, self.x + self.w / 2- main_state.camera_left, self.y + self.h / 2
+        return self.x - self.w / 2, self.y - self.h / 2, self.x + self.w / 2, self.y + self.h / 2
 
     def update(self):
         if self.timer >0:
@@ -119,11 +124,15 @@ class Flower(Object):
 
         self.frame = (self.frame + game_framework.frame_time* FRAMES_PER_ACTION * ACTION_PER_TIME)%4
     def do(self, character):
+        if(character.power_up == 0):
+            character.h *= 2
         character.power_up = 2
-        character.h = 2 * PIXEL_PER_METER
-        main_state.objects.remove(self)
-        game_world.remove_object(self)
-        del self
+
+        self.del_self()
         return
     def draw(self):
         self.image.clip_draw(int(self.frame)*16, (4-main_state.stage)*16,16,16,self.x - main_state.camera_left,self.y,self.w,self.h)
+    def del_self(self):
+        server.objects.remove(self)
+        game_world.remove_object(self)
+        del self

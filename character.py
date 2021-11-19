@@ -4,6 +4,7 @@ from pico2d import *
 from object import *
 
 import game_world
+import server
 
 # Run Speed
 PIXEL_PER_METER = (50.0 / 1.0)  # 50 pixel 1meter
@@ -305,8 +306,8 @@ class Character:
         self.image = load_image('resource\\Character_sprite.png')
         self.x = 200
         self.y = 550  # 위치
-        self.w = 1 * PIXEL_PER_METER
-        self.h = 1 * PIXEL_PER_METER # 크기
+        self.w = 1.0 * PIXEL_PER_METER
+        self.h = 0.9 * PIXEL_PER_METER # 크기
         self.dir = 0  # 이동하려는 방향. 1 = right/-1 = left
         self.lat_speed = 0  # 횡방향 속도 / right 방향이 +
         self.lat_accel = 0  # 횡방향 가속도
@@ -314,6 +315,7 @@ class Character:
         self.lon_accel = -0.1475  # 종방향 가속도
         self.power_up = 0  # 파워업 상태
         self.right = True  # 우측방향을 바라보고 있는지
+        self.jump = True # 공중에 떠있는지
         self.jump_timer = 0
         self.no_damege_timer = 0
         self.frame = 0
@@ -322,23 +324,24 @@ class Character:
         self.cur_state.enter(self, None)
 
     def get_bb(self):
-        return self.x - self.w / 2 - main_state.camera_left, self.y - self.h / 2, self.x + self.w / 2-main_state.camera_left, self.y + self.h / 2
+        return self.x - self.w / 2 + self.w / 10 , self.y - self.h / 2, self.x + self.w/2 - self.w / 10, self.y + self.h / 2
 
     def add_event(self, event):
         self.event_que.insert(0, event)
 
     def attack(self):
         fire = CharFire(self.x, self.y, self.right)
-        main_state.char_fires.append(fire)
+        server.char_fires.append(fire)
         game_world.add_object(fire, 1)
 
     def update(self):
+
         self.cur_state.do(self)
 
         if self.lon_accel!=0:
             self.lon_speed = self.lon_speed + self.lon_accel + game_framework.frame_time
             if self.lon_speed < -98: self.lon_speed = -98
-            self.y = self.y + PIXEL_PER_METER * self.lon_speed * game_framework.frame_time
+        self.y = self.y + PIXEL_PER_METER * self.lon_speed * game_framework.frame_time
         if self.jump_timer != 0:
             self.jump_timer -= 1
         if self.no_damege_timer != 0:
@@ -360,16 +363,19 @@ class Character:
         self.cur_state.draw(self)
 
     def handle_event(self, event):
+
         if (event.type, event.key) in key_event_table:
+
             key_event = key_event_table[(event.type, event.key)]
 
             if self.cur_state in next_state_table and key_event in next_state_table[self.cur_state]:
                 self.add_event(key_event)
 
-        elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_z) and self.lon_accel == 0 and self.lon_speed == 0:
+        elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_z) and not self.jump:
             self.y += 1
             self.lon_accel = 9.8+4.95
             self.jump_timer = 60
+            self.jump = True
         elif (event.type, event.key) == (SDL_KEYUP, SDLK_z) and self.jump_timer != 0:
 
             self.lon_accel -= 0.1475 * self.jump_timer
