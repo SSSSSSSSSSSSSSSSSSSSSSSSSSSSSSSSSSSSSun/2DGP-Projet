@@ -106,7 +106,7 @@ def collide_block(a, block):
         pos = tall_a_position_than_b(a,block)
     else:
         pos = a_position_than_b(a,block)
-    if pos == UP:  # 윗 충돌로 간주
+    if pos == UP and a.lon_speed <= 0:  # 윗 충돌로 간주
 
         a.lon_speed = 0
         a.lon_accel = 0
@@ -117,7 +117,6 @@ def collide_block(a, block):
     elif pos == DOWN: # 아랫 충돌로 간주
 
         a.lon_speed = 0
-        a.lon_accel = 9.8+4.95
         a.y = bottom_b - a.h/2
         block.do()
         return

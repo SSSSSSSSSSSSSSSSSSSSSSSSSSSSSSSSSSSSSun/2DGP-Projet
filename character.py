@@ -92,16 +92,20 @@ class IdleState:
 
     def draw(character):
         if character.power_up:
-            if character.right:
-                character.image.clip_draw(0,144-character.power_up*32,16, 32,character.x - main_state.camera_left, character.y, character.w, character.h)
-            else:
-                character.image.clip_draw(320, 64-character.power_up*32, 16,32, character.x - main_state.camera_left, character.y, character.w, character.h )
-
+            h = 2
         else:
+            h = 1
+
+        if character.jump:
             if character.right:
-                character.image.clip_draw(0,144,16, 16,character.x - main_state.camera_left, character.y, character.w, character.h)
+                    character.image.clip_draw(5 * 16, 144-character.power_up*32, 16, h*16, character.x - main_state.camera_left, character.y- main_state.camera_bottom, character.w,character.h)
             else:
-                character.image.clip_draw(320, 64, 16,16, character.x - main_state.camera_left, character.y, character.w, character.h )
+                    character.image.clip_draw(320 - 5 * 16, 64-character.power_up*32, 16, h*16, character.x - main_state.camera_left, character.y- main_state.camera_bottom,character.w, character.h)
+            return
+        if character.right:
+            character.image.clip_draw(0,144-character.power_up*32,16,h* 16,character.x - main_state.camera_left, character.y- main_state.camera_bottom, character.w, character.h)
+        else:
+            character.image.clip_draw(320, 64-character.power_up*32, 16,h*16, character.x - main_state.camera_left, character.y- main_state.camera_bottom, character.w, character.h )
 
 
 class RunState:
@@ -162,42 +166,35 @@ class RunState:
 
     def draw(character):
         if character.power_up:
-            if character.dir != 0:
-                if character.lat_speed / character.dir > 0:
-                    if character.right:
-                        character.image.clip_draw(int(character.frame) * 16, 144-character.power_up*32, 16, 32, character.x - main_state.camera_left, character.y, character.w, character.h)
-                    else:
-                        character.image.clip_draw(320 - int(character.frame) * 16, 64-character.power_up*32, 16, 32, character.x - main_state.camera_left, character.y,character.w, character.h)
-                else:
-                    if character.right:
-                        character.image.clip_draw(4 * 16, 144-character.power_up*32, 16, 32, character.x - main_state.camera_left, character.y, character.w, character.h)
-                    else:
-                        character.image.clip_draw(320 - 4 * 16, 64-character.power_up*32, 16, 32, character.x - main_state.camera_left,  character.y, character.w,
-                                                  character.h)
-            else:
-                if character.right:
-                    character.image.clip_draw(4 * 16, 144-character.power_up*32 ,16, 32, character.x - main_state.camera_left, character.y, character.w, character.h)
-                else:
-                    character.image.clip_draw(320 - 4 * 16, 64-character.power_up*32, 16, 32, character.x - main_state.camera_left, character.y, character.w, character.h)
-
+            h = 2
         else:
-            if character.dir != 0:
-                if character.lat_speed / character.dir > 0:
-                    if character.right:
-                        character.image.clip_draw(int(character.frame) * 16, 144, 16, 16, character.x - main_state.camera_left, character.y, character.w, character.h)
-                    else:
-                        character.image.clip_draw(320 - int(character.frame) * 16, 64, 16, 16, character.x - main_state.camera_left, character.y,character.w, character.h)
+            h = 1
+
+        if character.jump:
+            if character.right:
+                    character.image.clip_draw(5 * 16, 144-character.power_up*32, 16, h*16, character.x - main_state.camera_left, character.y- main_state.camera_bottom, character.w,character.h)
+            else:
+                    character.image.clip_draw(320 - 5 * 16, 64-character.power_up*32, 16, h*16, character.x - main_state.camera_left, character.y- main_state.camera_bottom,character.w, character.h)
+            return
+
+
+        if character.dir != 0:
+            if character.lat_speed / character.dir > 0:
+                if character.right:
+                    character.image.clip_draw(int(character.frame) * 16, 144-character.power_up*32, 16, h*16, character.x - main_state.camera_left, character.y- main_state.camera_bottom, character.w, character.h)
                 else:
-                    if character.right:
-                        character.image.clip_draw(4 * 16, 144, 16, 16, character.x - main_state.camera_left, character.y, character.w, character.h)
-                    else:
-                        character.image.clip_draw(320 - 4 * 16, 64, 16, 16, character.x - main_state.camera_left,  character.y, character.w,
-                                                  character.h)
+                    character.image.clip_draw(320 - int(character.frame) * 16, 64-character.power_up*32, 16, h*16, character.x - main_state.camera_left, character.y- main_state.camera_bottom,character.w, character.h)
             else:
                 if character.right:
-                    character.image.clip_draw(4 * 16, 144, 16, 16, character.x - main_state.camera_left, character.y, character.w, character.h)
+                    character.image.clip_draw(4 * 16, 144-character.power_up*32, 16, h*16, character.x - main_state.camera_left, character.y- main_state.camera_bottom, character.w, character.h)
                 else:
-                    character.image.clip_draw(320 - 4 * 16, 64, 16, 16, character.x - main_state.camera_left, character.y, character.w, character.h)
+                    character.image.clip_draw(320 - 4 * 16, 64-character.power_up*32, 16, h*16, character.x - main_state.camera_left,  character.y- main_state.camera_bottom, character.w,
+                                              character.h)
+        else:
+            if character.right:
+                character.image.clip_draw(4 * 16, 144-character.power_up*32, 16, h*16, character.x - main_state.camera_left, character.y- main_state.camera_bottom, character.w, character.h)
+            else:
+                character.image.clip_draw(320 - 4 * 16, 64-character.power_up*32, 16, h*16, character.x - main_state.camera_left, character.y- main_state.camera_bottom, character.w, character.h)
 
 
 class DashState:
@@ -258,34 +255,30 @@ class DashState:
 
     def draw(character):
         if character.power_up:
-            if character.lat_speed == 0:
-                IdleState.draw(character)
-                return
-            if character.lat_speed * character.dir >= 0:
-                if character.right:
-                    character.image.clip_draw(int(character.frame) * 16, 144-character.power_up*32, 16, 32, character.x - main_state.camera_left, character.y, character.w,character.h)
-                else:
-                    character.image.clip_draw(320 - int(character.frame) * 16, 64-character.power_up*32, 16, 32, character.x - main_state.camera_left, character.y,character.w, character.h)
-            else:
-                if character.right:
-                    character.image.clip_draw(4 * 16, 144-character.power_up*32, 16, 32, character.x - main_state.camera_left, character.y, character.w, character.h)
-                else:
-                    character.image.clip_draw(320 - 4 * 16, 64-character.power_up*32, 16, 32, character.x - main_state.camera_left, character.y, character.w, character.h)
-
+            h = 2
         else:
-            if character.lat_speed == 0:
-                IdleState.draw(character)
-                return
-            if character.lat_speed * character.dir >= 0:
-                if character.right:
-                    character.image.clip_draw(int(character.frame) * 16, 144, 16, 16, character.x - main_state.camera_left, character.y, character.w,character.h)
-                else:
-                    character.image.clip_draw(320 - int(character.frame) * 16, 64, 16, 16, character.x - main_state.camera_left, character.y,character.w, character.h)
+            h = 1
+        if character.jump:
+            if character.right:
+                    character.image.clip_draw(5 * 16, 144-character.power_up*32, 16, 16*h, character.x - main_state.camera_left, character.y- main_state.camera_bottom, character.w,character.h)
             else:
-                if character.right:
-                    character.image.clip_draw(4 * 16, 144, 16, 16, character.x - main_state.camera_left, character.y, character.w, character.h)
-                else:
-                    character.image.clip_draw(320 - 4 * 16, 64, 16, 16, character.x - main_state.camera_left, character.y, character.w, character.h)
+                    character.image.clip_draw(320 - 5 * 16, 64-character.power_up*32, 16, h*16, character.x - main_state.camera_left, character.y- main_state.camera_bottom,character.w, character.h)
+            return
+
+
+        if character.lat_speed == 0:
+            IdleState.draw(character)
+            return
+        if character.lat_speed * character.dir >= 0:
+            if character.right:
+                character.image.clip_draw(int(character.frame) * 16, 144-character.power_up*32, 16, h*16, character.x - main_state.camera_left, character.y-main_state.camera_bottom, character.w,character.h)
+            else:
+                character.image.clip_draw(320 - int(character.frame) * 16, 64-character.power_up*32, 16, h*16, character.x - main_state.camera_left, character.y-main_state.camera_bottom,character.w, character.h)
+        else:
+            if character.right:
+                character.image.clip_draw(4 * 16, 144-character.power_up*32, 16, h*16, character.x - main_state.camera_left, character.y-main_state.camera_bottom, character.w, character.h)
+            else:
+                character.image.clip_draw(320 - 4 * 16, 64-character.power_up*32, 16, h*16, character.x - main_state.camera_left, character.y-main_state.camera_bottom, character.w, character.h)
 
 next_state_table = {
     IdleState: {RIGHT_UP: RunState, LEFT_UP: RunState,
@@ -346,9 +339,18 @@ class Character:
             self.jump_timer -= 1
         if self.no_damege_timer != 0:
             self.no_damege_timer -= 1
-        self.x = clamp(main_state.camera_left,self.x,self.x+1)
-        if self.x - main_state.camera_left > 300:
-            main_state.camera_left = self.x - 300
+        self.x = clamp(main_state.camera_left,self.x,server.max_width)
+        if server.max_width - main_state.camera_left <= main_state.window_width:
+            pass
+        elif self.x - main_state.camera_left > 6 * PIXEL_PER_METER:
+            main_state.camera_left = self.x - 6 * PIXEL_PER_METER
+
+        main_state.camera_bottom = self.y - 6 * PIXEL_PER_METER
+
+        if main_state.camera_bottom < 0: main_state.camera_bottom = 0
+        if server.max_height - main_state.camera_bottom <= main_state.window_width:
+            main_state.camera_bottom = server.max_height - main_state.window_width
+
 
 
         if len(self.event_que) > 0:

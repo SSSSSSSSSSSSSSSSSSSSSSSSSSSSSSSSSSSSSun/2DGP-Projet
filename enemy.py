@@ -76,13 +76,13 @@ class Goomba(Enemy):
         if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
 
         if self.hp < 0:
-            self.image.clip_composite_draw(0,240,16,16,-(100-self.timer) * 3.141592 / 270, '', self.x - main_state.camera_left, self.y, self.w, self.h)
+            self.image.clip_composite_draw(0,240,16,16,-(100-self.timer) * 3.141592 / 270, '', self.x - main_state.camera_left, self.y- main_state.camera_bottom, self.w, self.h)
             return
 
         if(self.right):
-            self.image.clip_draw((7-int(self.frame)) * 16, 112, 16, 16, self.x - main_state.camera_left, self.y, self.w, self.h)
+            self.image.clip_draw((7-int(self.frame)) * 16, 112, 16, 16, self.x - main_state.camera_left, self.y- main_state.camera_bottom, self.w, self.h)
         else:
-            self.image.clip_draw(int(self.frame) * 16, 240, 16, 16, self.x - main_state.camera_left, self.y,self.w,self.h)
+            self.image.clip_draw(int(self.frame) * 16, 240, 16, 16, self.x - main_state.camera_left, self.y- main_state.camera_bottom,self.w,self.h)
 
     def del_self(self):
             server.enemys.remove(self)
@@ -136,13 +136,13 @@ class Turtle(Enemy):
         if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
 
         if self.hp < 0:
-            self.image.clip_composite_draw(0,208,16,32,-(100-self.timer) * 3.141592 / 270, '', self.x - main_state.camera_left, self.y, self.w, self.h)
+            self.image.clip_composite_draw(0,208,16,32,-(100-self.timer) * 3.141592 / 270, '', self.x - main_state.camera_left, self.y- main_state.camera_bottom, self.w, self.h)
             return
 
         if (self.right):
-            self.image.clip_draw((7 - int(self.frame)) * 16, 80, 16, 32, self.x - main_state.camera_left, self.y, self.w, self.h)
+            self.image.clip_draw((7 - int(self.frame)) * 16, 80, 16, 32, self.x - main_state.camera_left, self.y- main_state.camera_bottom, self.w, self.h)
         else:
-            self.image.clip_draw(int(self.frame) * 16, 208, 16, 32, self.x - main_state.camera_left, self.y, self.w, self.h)
+            self.image.clip_draw(int(self.frame) * 16, 208, 16, 32, self.x - main_state.camera_left, self.y- main_state.camera_bottom, self.w, self.h)
     def del_self(self):
             server.enemys.remove(self)
             game_world.remove_object(self)
@@ -201,13 +201,13 @@ class Hammer(Enemy):
         if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
 
         if self.hp < 0:
-            self.image.clip_composite_draw(0,160,16,32,-(100-self.timer) * 3.141592 / 270, '', self.x - main_state.camera_left, self.y, self.w, self.h)
+            self.image.clip_composite_draw(0,160,16,32,-(100-self.timer) * 3.141592 / 270, '', self.x - main_state.camera_left, self.y- main_state.camera_bottom, self.w, self.h)
             return
 
         if self.right:
-            self.image.clip_draw((7 - int(self.frame)) * 16, 32, 16, 32, self.x -  main_state.camera_left, self.y, self.w, self.h)
+            self.image.clip_draw((7 - int(self.frame)) * 16, 32, 16, 32, self.x -  main_state.camera_left, self.y- main_state.camera_bottom, self.w, self.h)
         else:
-            self.image.clip_draw(int(self.frame) * 16, 160, 16, 32, self.x - main_state.camera_left, self.y, self.w, self.h)
+            self.image.clip_draw(int(self.frame) * 16, 160, 16, 32, self.x - main_state.camera_left, self.y- main_state.camera_bottom, self.w, self.h)
     def del_self(self):
             server.enemys.remove(self)
             game_world.remove_object(self)
@@ -263,9 +263,9 @@ class Boss(Enemy):
     def draw(self):
         if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
         if (self.right):
-            self.image.clip_draw((6 - int(self.frame)*2) * 16, 0, 32, 32, self.x - main_state.camera_left, self.y, self.w, self.h)
+            self.image.clip_draw((6 - int(self.frame)*2) * 16, 0, 32, 32, self.x - main_state.camera_left, self.y- main_state.camera_bottom, self.w, self.h)
         else:
-            self.image.clip_draw(int(self.frame) * 32, 128, 32, 32, self.x -main_state.camera_left, self.y, self.w, self.h)
+            self.image.clip_draw(int(self.frame) * 32, 128, 32, 32, self.x -main_state.camera_left, self.y- main_state.camera_bottom, self.w, self.h)
     def del_self(self):
             server.enemys.remove(self)
             game_world.remove_object(self)

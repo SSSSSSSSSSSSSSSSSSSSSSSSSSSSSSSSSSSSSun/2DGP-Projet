@@ -22,16 +22,19 @@ name = "MainState"
 stage = 1
 level = 1
 camera_left = 0
-camera_down = 0
+camera_bottom = 0
 
+window_width = 800
+window_height = 600
 
 def enter():
-    global camera_left, camera_down
+    global camera_left, camera_bottom
     camera_left = 0
     camera_down = 0
 
 #=====임시=========
-
+    server.max_width = 1000
+    server.max_height = 1000
     server.character = Character()
 
     server.enemys = [Goomba(800,230), Turtle(400,230,False), Boss(600,330)]
@@ -213,12 +216,12 @@ def draw():
             x = (fire.x//PIXEL_PER_METER) * PIXEL_PER_METER
 
             if x in server.blocks:
-                for block in blocks[x]:
+                for block in server.blocks[x]:
                     draw_rectangle(*block.get_bb())
 
             x += PIXEL_PER_METER
             if x in server.blocks:
-                for block in blocks[x]:
+                for block in server.blocks[x]:
                     draw_rectangle(*block.get_bb())
 
     update_canvas()

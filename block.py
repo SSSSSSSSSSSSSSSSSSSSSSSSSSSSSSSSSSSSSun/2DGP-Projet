@@ -40,9 +40,9 @@ class Platform(Block):
         if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
 
         if self.type == 0:
-            self.image.clip_draw(0,128-main_state.stage*16,16,16,self.x - main_state.camera_left,self.y,self.w,self.h)
+            self.image.clip_draw(0,128-main_state.stage*16,16,16,self.x - main_state.camera_left,self.y- main_state.camera_bottom,self.w,self.h)
         if self.type == 1:
-            self.image.clip_draw(48,128-main_state.stage*16,16,16,self.x - main_state.camera_left,self.y,self.w,self.h)
+            self.image.clip_draw(48,128-main_state.stage*16,16,16,self.x - main_state.camera_left,self.y- main_state.camera_bottom,self.w,self.h)
     def del_self(self):
         server.blocks[self.x].remove(self)
         game_world.remove_object(self)
@@ -65,7 +65,7 @@ class Brick(Block):
         pass
     def draw(self):
         if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
-        self.image.clip_draw(16+self.type*16,128-main_state.stage*16,16,16,self.x - main_state.camera_left,self.y,self.w,self.h)
+        self.image.clip_draw(16+self.type*16,128-main_state.stage*16,16,16,self.x - main_state.camera_left,self.y- main_state.camera_bottom,self.w,self.h)
     def del_self(self):
         server.blocks[self.x].remove(self)
         game_world.remove_object(self)
@@ -95,9 +95,9 @@ class Box(Block):
     def draw(self):
         if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
         if len(self.contents) > 0:
-            self.image.clip_draw(int(self.frame)*16,48,16,16,self.x - main_state.camera_left,self.y,self.w,self.h)
+            self.image.clip_draw(int(self.frame)*16,48,16,16,self.x - main_state.camera_left,self.y- main_state.camera_bottom,self.w,self.h)
         else:
-            self.image.clip_draw(48,0,16,16,self.x - main_state.camera_left,self.y,self.w,self.h)
+            self.image.clip_draw(48,0,16,16,self.x - main_state.camera_left,self.y- main_state.camera_bottom,self.w,self.h)
     def del_self(self):
         server.blocks[self.x].remove(self)
         game_world.remove_object(self)
@@ -122,7 +122,7 @@ class Coin(Block):
         pass
     def draw(self):
         if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
-        self.image.clip_draw(int(self.frame)*16,32,16,16,self.x - main_state.camera_left,self.y,self.w,self.h)
+        self.image.clip_draw(int(self.frame)*16,32,16,16,self.x - main_state.camera_left,self.y- main_state.camera_bottom,self.w,self.h)
     def del_self(self):
         server.blocks[self.x].remove(self)
         game_world.remove_object(self)

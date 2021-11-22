@@ -57,7 +57,7 @@ class CharFire(Object):
 
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
     def draw(self):
-        self.image.clip_draw((4 + int(self.frame))*16,0,8,8,self.x - main_state.camera_left,self.y,self.w,self.h)
+        self.image.clip_draw((4 + int(self.frame))*16,0,8,8,self.x - main_state.camera_left,self.y- main_state.camera_bottom,self.w,self.h)
     def del_self(self):
         server.char_fires.remove(self)
         game_world.remove_object(self)
@@ -99,7 +99,7 @@ class Mushroom(Object):
         self.del_self()
         return
     def draw(self):
-        self.image.clip_draw(0, 64,16,16,self.x - main_state.camera_left,self.y,self.w,self.h)
+        self.image.clip_draw(0, 64,16,16,self.x - main_state.camera_left,self.y- main_state.camera_bottom,self.w,self.h)
     def del_self(self):
         server.objects.remove(self)
         game_world.remove_object(self)
@@ -131,7 +131,7 @@ class Flower(Object):
         self.del_self()
         return
     def draw(self):
-        self.image.clip_draw(int(self.frame)*16, (4-main_state.stage)*16,16,16,self.x - main_state.camera_left,self.y,self.w,self.h)
+        self.image.clip_draw(int(self.frame)*16, (4-main_state.stage)*16,16,16,self.x - main_state.camera_left,self.y- main_state.camera_bottom,self.w,self.h)
     def del_self(self):
         server.objects.remove(self)
         game_world.remove_object(self)
