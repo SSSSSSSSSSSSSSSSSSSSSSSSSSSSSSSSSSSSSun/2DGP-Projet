@@ -1,6 +1,5 @@
 import game_framework
 from pico2d import *
-from character import *
 import main_state
 import game_world
 import server
@@ -8,8 +7,12 @@ import server
 
 PIXEL_PER_METER = (50.0 / 1.0)  # 50 pixel 1meter
 
-CHARFIRE_SPEED_MPS = 15    # m/s
+CHARFIRE_SPEED_MPS = 5    # m/s
 CHARFIRE_SPEED_PPS = PIXEL_PER_METER * CHARFIRE_SPEED_MPS
+
+BOSSFIRE_SPEED_MPS = 5    # m/s
+BOSSFIRE_SPEED_PPS = PIXEL_PER_METER * BOSSFIRE_SPEED_MPS
+
 MUSHROOM_SPEED_MPS = 1
 MUSHROOM_SPEED_PPS = PIXEL_PER_METER * MUSHROOM_SPEED_MPS
 
@@ -61,7 +64,38 @@ class CharFire(Object):
     def del_self(self):
         server.char_fires.remove(self)
         game_world.remove_object(self)
-        del self
+
+class BossFire(Object):
+    def __init__(self, x, y, lon_speed, right):
+        super(BossFire, self).__init__(x, y)
+        self.w = 1.5 * PIXEL_PER_METER
+        self.h = 0.5 * PIXEL_PER_METER
+        self.lon_speed = lon_speed
+        if right == True: self.dir = 1
+        else: self.dir = -1
+
+    def get_bb(self):
+        return self.x - self.w / 2, self.y - self.h / 2, self.x + self.w / 2, self.y + self.h / 2
+
+    def update(self):
+        self.x = self.x + self.dir * BOSSFIRE_SPEED_PPS * game_framework.frame_time
+        self.y = self.y + self.lon_speed * BOSSFIRE_SPEED_PPS * game_framework.frame_time
+        if self.x < main_state.camera_left - self.w/2 or main_state.camera_left + 800+self.w/2 < self.x or self.y < -10:  # 추락 혹은 맵 이탈시
+            self.del_self()
+
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 2
+    def draw(self):
+        self.image.clip_draw((4 + int(self.frame)*2)*16,48,24,8,self.x - main_state.camera_left,self.y- main_state.camera_bottom,self.w,self.h)
+    def do(self, character):
+        if character.no_damege_timer==0:
+            character.no_damege_timer = 1000
+            character.power_up -= 1
+            if not character.power_up:
+                character.h /= 2
+    def del_self(self):
+
+        server.objects.remove(self)
+        game_world.remove_object(self)
 
 class Mushroom(Object):
     def __init__(self, x, y):
@@ -79,7 +113,6 @@ class Mushroom(Object):
         if self.timer >0:
             self.timer -= 1
             self.y += 1
-            return
 
         self.x = self.x + self.lat_speed * game_framework.frame_time
 
@@ -103,7 +136,6 @@ class Mushroom(Object):
     def del_self(self):
         server.objects.remove(self)
         game_world.remove_object(self)
-        del self
 
 
 class Flower(Object):
@@ -135,4 +167,3 @@ class Flower(Object):
     def del_self(self):
         server.objects.remove(self)
         game_world.remove_object(self)
-        del self

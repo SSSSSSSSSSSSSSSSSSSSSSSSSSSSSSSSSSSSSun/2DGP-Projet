@@ -3,7 +3,7 @@ from pico2d import *
 import main_state
 import game_world
 import server
-from object import *
+
 PIXEL_PER_METER = (50.0 / 1.0)  # 50 pixel 1meter
 
 
@@ -46,7 +46,6 @@ class Platform(Block):
     def del_self(self):
         server.blocks[self.x].remove(self)
         game_world.remove_object(self)
-        del self
 
 class Brick(Block):
     def __init__(self,x,y, type):
@@ -69,7 +68,6 @@ class Brick(Block):
     def del_self(self):
         server.blocks[self.x].remove(self)
         game_world.remove_object(self)
-        del self
 
 class Box(Block):
     def __init__(self,x,y,l):
@@ -101,7 +99,6 @@ class Box(Block):
     def del_self(self):
         server.blocks[self.x].remove(self)
         game_world.remove_object(self)
-        del self
 
 class Coin(Block):
     def __init__(self,x,y):
@@ -126,4 +123,3 @@ class Coin(Block):
     def del_self(self):
         server.blocks[self.x].remove(self)
         game_world.remove_object(self)
-        del self

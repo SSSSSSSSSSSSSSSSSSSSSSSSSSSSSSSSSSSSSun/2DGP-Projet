@@ -1,7 +1,7 @@
 import game_framework
 import main_state
 from pico2d import *
-from object import *
+
 
 import game_world
 import server
@@ -323,9 +323,9 @@ class Character:
         self.event_que.insert(0, event)
 
     def attack(self):
-        fire = CharFire(self.x, self.y, self.right)
+        fire = main_state.CharFire(self.x, self.y, self.right)
         server.char_fires.append(fire)
-        game_world.add_object(fire, 1)
+        game_world.add_object(fire, 3)
 
     def update(self):
 

@@ -5,6 +5,7 @@ import game_framework
 from pico2d import *
 import main_state
 import game_world
+from object import *
 import server
 
 PIXEL_PER_METER = (50.0 / 1.0)  # 50 pixel 1meter
@@ -87,7 +88,6 @@ class Goomba(Enemy):
     def del_self(self):
             server.enemys.remove(self)
             game_world.remove_object(self)
-            del self
 
 class Turtle(Enemy):
     def __init__(self, x, y, wing):
@@ -146,7 +146,6 @@ class Turtle(Enemy):
     def del_self(self):
             server.enemys.remove(self)
             game_world.remove_object(self)
-            del self
 
 class Hammer(Enemy):
     def __init__(self,x,y):
@@ -211,7 +210,6 @@ class Hammer(Enemy):
     def del_self(self):
             server.enemys.remove(self)
             game_world.remove_object(self)
-            del self
 
 class Boss(Enemy):
     def __init__(self, x, y):
@@ -245,7 +243,10 @@ class Boss(Enemy):
             i = randint(0,2)
 
             if i==0:
-                pass #불쏘는 코드
+                for i in range(-1,1+1):
+                    fire = BossFire(self.x, self.y, PIXEL_PER_METER/500 * i, self.right)
+                    server.objects.append(fire)
+                    game_world.add_object(fire, 3)
             elif i==1:
                 self.y += 1
                 self.lon_speed = 10
@@ -269,4 +270,3 @@ class Boss(Enemy):
     def del_self(self):
             server.enemys.remove(self)
             game_world.remove_object(self)
-            del self

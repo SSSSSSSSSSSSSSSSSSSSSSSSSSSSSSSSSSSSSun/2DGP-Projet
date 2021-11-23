@@ -4,15 +4,13 @@ import os
 
 from pico2d import *
 import game_framework
+import load_state
 import game_world
 import server
 from collide import *
 debug = False
 
-from character import Character
-from enemy import *
-from object import *
-from block import *
+
 
 
 PIXEL_PER_METER = (50.0 / 1.0)
@@ -32,32 +30,9 @@ def enter():
     camera_left = 0
     camera_down = 0
 
-#=====임시=========
-    server.max_width = 1000
-    server.max_height = 1000
-    server.character = Character()
-
-    server.enemys = [Goomba(800,230), Turtle(400,230,False), Boss(600,330)]
-
-    server.objects = []
-
-    blocks_list = [Platform(i,j,0) for i in range(0,5000,int(PIXEL_PER_METER)) for j in range(0,200,int(PIXEL_PER_METER))]
-    blocks_list +=  [Brick(300,300,1),Brick(350,300,0), Platform(400,300,1), Box(450,300,[Mushroom(450,300), Flower(450,300)])]
-    blocks_list +=[Brick(300,200,1)]
-    for block in blocks_list:
-        if not block.x in server.blocks:
-            server.blocks[block.x] = []
-        server.blocks[block.x].append(block)
-
-    game_world.add_object(server.character, 4)
-    game_world.add_objects(server.enemys, 3)
-    game_world.add_objects(server.objects,1)
-    for i in server.blocks.values():
-        game_world.add_objects(i, 2)
-#=====임시=========
 
 def exit():
-    game_world.clear()
+    pass
 
 def pause():
     pass
@@ -171,19 +146,25 @@ def update():
         on_block = False
         if x in server.blocks:
             for block in server.blocks[x]:
-                if object.timer <= 0:
+                if object.timer <= 0 and object in server.objects:
                     if drop_a_collide(object,block):
                         collide_object_block(object, block)
                         on_block = True
         x += PIXEL_PER_METER
         if x in server.blocks:
             for block in server.blocks[x]:
-                if object.timer <= 0:
+                if object.timer <= 0 and object in server.objects:
                     if drop_a_collide(object,block):
                         collide_object_block(object, block)
                         on_block = True
         if not on_block:
             object.lon_accel = -0.1475
+
+    if server.character.power_up < 0:
+        game_framework.change_state(load_state)
+
+
+
 def draw():
     clear_canvas()
     for game_object in game_world.all_objects():
