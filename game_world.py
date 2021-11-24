@@ -1,10 +1,10 @@
-
-# layer 0: Background Objects
-# layer 1: Item Objects
-# layer 2: Block Objects
-# layer 3: Enemy / Fire
-# layer 4: Character
-objects = [[],[],[],[],[]]
+# layer 0: Background Image
+# layer 1: Background Objects
+# layer 2: Item Objects
+# layer 3: Block Objects
+# layer 4: Enemy / Fire
+# layer 5: Character
+objects = [[],[],[],[],[], []
 
 def add_object(o, layer):
     objects[layer].append(o)

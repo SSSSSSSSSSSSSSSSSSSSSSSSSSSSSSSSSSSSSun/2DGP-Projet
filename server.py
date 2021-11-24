@@ -1,4 +1,5 @@
 character = None
+bg = []
 enemys = []
 char_fires = []
 objects = []
@@ -10,6 +11,7 @@ max_height = None
 def clear():
     global character, enemys, char_fires, objects, blocks
     character = None
+    bg.clear()
     enemys.clear()
     char_fires.clear()
     objects.clear()

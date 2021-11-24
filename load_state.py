@@ -5,6 +5,7 @@ import game_world
 import server
 
 from character import Character
+from bg import *
 from enemy import *
 from object import *
 from block import *
@@ -18,12 +19,12 @@ def enter():
     game_world.clear()
 
     #=====임시=========
-    server.max_width = 1000
+    server.max_width = 3000
     server.max_height = 1000
     server.character = Character()
 
-    server.enemys = [Goomba(800,230), Turtle(400,230,False), Boss(600,330)]
-
+    server.enemys = [Goomba(800,200), Turtle(400,200,False), Boss(600,200)]
+    server.bg = [Big_castle(500,450)]
     server.objects = []
 
     blocks_list = [Platform(i,j,0) for i in range(0,5000,int(PIXEL_PER_METER)) for j in range(0,200,int(PIXEL_PER_METER))]
@@ -34,11 +35,12 @@ def enter():
             server.blocks[block.x] = []
         server.blocks[block.x].append(block)
 
-    game_world.add_object(server.character, 4)
-    game_world.add_objects(server.enemys, 3)
-    game_world.add_objects(server.objects,1)
+    game_world.add_object(server.character,5)
+    game_world.add_objects(server.bg, 1)
+    game_world.add_objects(server.enemys, 4)
+    game_world.add_objects(server.objects,2)
     for i in server.blocks.values():
-        game_world.add_objects(i, 2)
+        game_world.add_objects(i, 3)
 
     global image
     image = load_image('resource\\Object_sprite.png')
