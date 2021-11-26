@@ -5,6 +5,7 @@ from pico2d import *
 
 import game_world
 import server
+import object
 
 # Run Speed
 PIXEL_PER_METER = (50.0 / 1.0)  # 50 pixel 1meter
@@ -323,9 +324,9 @@ class Character:
         self.event_que.insert(0, event)
 
     def attack(self):
-        fire = main_state.CharFire(self.x, self.y, self.right)
+        fire = object.CharFire(self.x, self.y, self.right)
         server.char_fires.append(fire)
-        game_world.add_object(fire, 3)
+        game_world.add_object(fire, 4)
 
     def update(self):
 
@@ -382,3 +383,9 @@ class Character:
 
             self.lon_accel -= 0.1475 * self.jump_timer
             self.jump_timer = 0
+    def damaged(self):
+        if self.no_damege_timer==0:
+            self.no_damege_timer = 1000
+            self.power_up -= 1
+            if not self.power_up:
+                self.h /= 2

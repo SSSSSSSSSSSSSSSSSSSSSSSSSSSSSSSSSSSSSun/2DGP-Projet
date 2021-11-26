@@ -13,12 +13,13 @@ debug = False
 
 
 
+
+
 PIXEL_PER_METER = (50.0 / 1.0)
 
 name = "MainState"
 
-stage = 1
-level = 1
+
 camera_left = 0
 camera_bottom = 0
 
@@ -26,6 +27,7 @@ window_width = 800
 window_height = 600
 
 def enter():
+    events = None
     global camera_left, camera_bottom
     camera_left = 0
     camera_down = 0
@@ -123,6 +125,11 @@ def update():
                     server.char_fires.remove(fire)
                     game_world.remove_object(fire)
                     del fire
+        # 적 - 등껍질
+        for shell in server.objects:
+             if type(shell) == type(load_state.Shell(0,0,0)) and enemy.hp > 0 and shell.lat_speed!=0:
+                if collide(enemy,shell):
+                    enemy.hp -= 2
     # 파이어볼 - 블록
     for fire in server.char_fires:
         x = (fire.x//PIXEL_PER_METER) * PIXEL_PER_METER
@@ -171,39 +178,63 @@ def draw():
         game_object.draw()
 
     if debug:
-        draw_rectangle(*server.character.get_bb())
+        l, b, r, t = server.character.get_bb()
+        draw_rectangle(l-camera_left,b-camera_bottom,r-camera_left,t-camera_bottom)
         x = (server.character.x // PIXEL_PER_METER) * PIXEL_PER_METER
         if x in server.blocks:
             for block in server.blocks[x]:
-                draw_rectangle(*block.get_bb())
+                l, b, r, t = block.get_bb()
+                draw_rectangle(l-camera_left,b-camera_bottom,r-camera_left,t-camera_bottom)
         x += PIXEL_PER_METER
         if x in server.blocks:
             for block in server.blocks[x]:
-                draw_rectangle(*block.get_bb())
+                l, b, r, t = block.get_bb()
+                draw_rectangle(l-camera_left,b-camera_bottom,r-camera_left,t-camera_bottom)
         for enemy in server.enemys:
-            draw_rectangle(*enemy.get_bb())
+            l, b, r, t = enemy.get_bb()
+            draw_rectangle(l-camera_left,b-camera_bottom,r-camera_left,t-camera_bottom)
             x = (enemy.x//PIXEL_PER_METER) * PIXEL_PER_METER
             on_block = False
             if x in server.blocks:
                 for block in server.blocks[x]:
-                    draw_rectangle(*block.get_bb())
+                    l, b, r, t = block.get_bb()
+                    draw_rectangle(l-camera_left,b-camera_bottom,r-camera_left,t-camera_bottom)
 
             x += PIXEL_PER_METER
             if x in server.blocks:
                 for block in server.blocks[x]:
-                    draw_rectangle(*block.get_bb())
+                    l, b, r, t = block.get_bb()
+                    draw_rectangle(l-camera_left,b-camera_bottom,r-camera_left,t-camera_bottom)
         for fire in server.char_fires:
-            draw_rectangle(*fire.get_bb())
+            l, b, r, t = fire.get_bb()
+            draw_rectangle(l-camera_left,b-camera_bottom,r-camera_left,t-camera_bottom)
             x = (fire.x//PIXEL_PER_METER) * PIXEL_PER_METER
 
             if x in server.blocks:
                 for block in server.blocks[x]:
-                    draw_rectangle(*block.get_bb())
+                    l, b, r, t = block.get_bb()
+                    draw_rectangle(l-camera_left,b-camera_bottom,r-camera_left,-camera_bottom)
 
             x += PIXEL_PER_METER
             if x in server.blocks:
                 for block in server.blocks[x]:
-                    draw_rectangle(*block.get_bb())
+                    l, b, r, t = block.get_bb()
+                    draw_rectangle(l-camera_left,b-camera_bottom,r-camera_left,-camera_bottom)
+        for object in server.objects:
+            l, b, r, t = object.get_bb()
+            draw_rectangle(l-camera_left,b-camera_bottom,r-camera_left,t-camera_bottom)
+            x = (object.x//PIXEL_PER_METER) * PIXEL_PER_METER
+
+            if x in server.blocks:
+                for block in server.blocks[x]:
+                    l, b, r, t = block.get_bb()
+                    draw_rectangle(l-camera_left,b-camera_bottom,r-camera_left,-camera_bottom)
+
+            x += PIXEL_PER_METER
+            if x in server.blocks:
+                for block in server.blocks[x]:
+                    l, b, r, t = block.get_bb()
+                    draw_rectangle(l-camera_left,b-camera_bottom,r-camera_left,-camera_bottom)
 
     update_canvas()
 

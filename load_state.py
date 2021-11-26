@@ -23,7 +23,7 @@ def enter():
     server.max_height = 1000
     server.character = Character()
 
-    server.enemys = [Goomba(800,200), Turtle(400,200,False), Boss(600,200)]
+    server.enemys = [Hammer(800,200), Turtle(400,250,False), Boss(600,200)]
     server.bg = [Big_castle(500,450)]
     server.objects = []
 

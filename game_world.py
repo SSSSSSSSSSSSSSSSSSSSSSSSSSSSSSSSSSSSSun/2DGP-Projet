@@ -4,7 +4,7 @@
 # layer 3: Block Objects
 # layer 4: Enemy / Fire
 # layer 5: Character
-objects = [[],[],[],[],[], []
+objects = [[],[],[],[],[], []]
 
 def add_object(o, layer):
     objects[layer].append(o)

@@ -3,6 +3,7 @@ from pico2d import *
 import main_state
 import game_world
 import server
+import collide
 
 
 PIXEL_PER_METER = (50.0 / 1.0)  # 50 pixel 1meter
@@ -15,6 +16,9 @@ BOSSFIRE_SPEED_PPS = PIXEL_PER_METER * BOSSFIRE_SPEED_MPS
 
 MUSHROOM_SPEED_MPS = 1
 MUSHROOM_SPEED_PPS = PIXEL_PER_METER * MUSHROOM_SPEED_MPS
+
+SHELL_SPEED_MPS = 8
+SHELL_SPEED_PPS = PIXEL_PER_METER * SHELL_SPEED_MPS
 
 # Action Speed
 TIME_PER_ACTION = 0.3
@@ -49,7 +53,7 @@ class CharFire(Object):
     def update(self):
         self.x = self.x + self.dir * CHARFIRE_SPEED_PPS * game_framework.frame_time
 
-        if self.x < main_state.camera_left - self.w/2 or main_state.camera_left + 800+self.w/2 < self.x or self.y < -10:  # 추락 혹은 맵 이탈시
+        if self.x < main_state.camera_left - self.w/2 or main_state.camera_left + main_state.window_width+self.w/2 < self.x or self.y < -10:  # 추락 혹은 맵 이탈시
             self.del_self()
             return
 
@@ -80,18 +84,14 @@ class BossFire(Object):
     def update(self):
         self.x = self.x + self.dir * BOSSFIRE_SPEED_PPS * game_framework.frame_time
         self.y = self.y + self.lon_speed * BOSSFIRE_SPEED_PPS * game_framework.frame_time
-        if self.x < main_state.camera_left - self.w/2 or main_state.camera_left + 800+self.w/2 < self.x or self.y < -10:  # 추락 혹은 맵 이탈시
+        if self.x < main_state.camera_left - self.w/2 or main_state.camera_left + main_state.window_width+self.w/2 < self.x or self.y < -10:  # 추락 혹은 맵 이탈시
             self.del_self()
 
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 2
     def draw(self):
         self.image.clip_draw((4 + int(self.frame)*2)*16,48,24,8,self.x - main_state.camera_left,self.y- main_state.camera_bottom,self.w,self.h)
     def do(self, character):
-        if character.no_damege_timer==0:
-            character.no_damege_timer = 1000
-            character.power_up -= 1
-            if not character.power_up:
-                character.h /= 2
+        character.damaged()
     def del_self(self):
 
         server.objects.remove(self)
@@ -116,7 +116,7 @@ class Mushroom(Object):
 
         self.x = self.x + self.lat_speed * game_framework.frame_time
 
-        if self.x < main_state.camera_left - self.w/2 or main_state.camera_left + 800+self.w/2 < self.x or self.y < -10:  # 추락 혹은 맵 이탈시
+        if self.x < main_state.camera_left - self.w/2 or main_state.camera_left + main_state.window_width+self.w/2 < self.x or self.y < -10:  # 추락 혹은 맵 이탈시
             self.del_self()
             return
 
@@ -149,6 +149,10 @@ class Flower(Object):
         return self.x - self.w / 2, self.y - self.h / 2, self.x + self.w / 2, self.y + self.h / 2
 
     def update(self):
+        if self.x < main_state.camera_left - self.w/2 or main_state.camera_left + main_state.window_width+self.w/2 < self.x or self.y < -10:  # 추락 혹은 맵 이탈시
+            self.del_self()
+            return
+
         if self.timer >0:
             self.timer -= 1
             self.y += 1
@@ -163,7 +167,52 @@ class Flower(Object):
         self.del_self()
         return
     def draw(self):
-        self.image.clip_draw(int(self.frame)*16, (4-main_state.stage)*16,16,16,self.x - main_state.camera_left,self.y- main_state.camera_bottom,self.w,self.h)
+        self.image.clip_draw(int(self.frame)*16, (4-server.stage)*16,16,16,self.x - main_state.camera_left,self.y- main_state.camera_bottom,self.w,self.h)
+    def del_self(self):
+        server.objects.remove(self)
+        game_world.remove_object(self)
+
+class Shell(Object):
+    def __init__(self, x, y, kind):
+        super(Shell, self).__init__(x, y)
+        self.w = 1 * PIXEL_PER_METER
+        self.h = 1 * PIXEL_PER_METER
+        self.kind = kind
+
+    def get_bb(self):
+
+        return self.x - self.w / 2, self.y - self.h / 2, self.x + self.w / 2, self.y + self.h / 2
+
+    def update(self):
+        if self.x < main_state.camera_left - self.w/2 or main_state.camera_left + main_state.window_width+self.w/2 < self.x or self.y < -10:  # 추락 혹은 맵 이탈시
+            self.del_self()
+            return
+
+        self.x += SHELL_SPEED_PPS * self.lat_speed * game_framework.frame_time
+
+        if self.lon_accel!=0:
+            self.lon_speed = self.lon_speed + self.lon_accel + game_framework.frame_time
+            if self.lon_speed < -98: self.lon_speed = -98
+            self.y = self.y + PIXEL_PER_METER * self.lon_speed * game_framework.frame_time
+
+    def do(self, character):
+        #충돌
+
+        pos = collide.a_position_than_b(character,self)
+        if self.lat_speed == 0:
+            character.lon_speed = 10.0
+            if character.x < self.x:
+                self.lat_speed = 1
+                self.x += PIXEL_PER_METER/2
+            else:
+                self.lat_speed = -1
+                self.x -= PIXEL_PER_METER/2
+        else:
+            if pos == 1: self.lat_speed =0
+            else: character.damaged()
+        return
+    def draw(self):
+        self.image.clip_draw(16+16*self.kind, 64, 16,16,self.x - main_state.camera_left,self.y- main_state.camera_bottom,self.w,self.h)
     def del_self(self):
         server.objects.remove(self)
         game_world.remove_object(self)

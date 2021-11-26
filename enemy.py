@@ -56,7 +56,7 @@ class Goomba(Enemy):
             self.del_self()
             return
 
-        if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
+        if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+main_state.window_width+self.w/2 < self.x: return
         if self.lon_accel!=0:
             self.lon_speed = self.lon_speed + self.lon_accel + game_framework.frame_time
             if self.lon_speed < -98: self.lon_speed = -98
@@ -89,6 +89,66 @@ class Goomba(Enemy):
             server.enemys.remove(self)
             game_world.remove_object(self)
 
+class Black_Goomba(Enemy):
+    def __init__(self, x, y):
+        super(Black_Goomba, self).__init__(x, y)
+        self.lat_speed = -0.1
+        self.w = 0.9 * PIXEL_PER_METER
+        self.h = 0.9 * PIXEL_PER_METER
+        self.hp = 1
+        self.timer = -1
+
+    def get_bb(self):
+        return self.x-self.w/2, self.y-self.h/2, self.x+self.w/2, self.y+self.h/2
+
+    def update(self):
+        if self.timer==0:
+            self.del_self()
+            return
+        elif self.timer > 0:
+            self.timer -= 1
+
+        if self.x < main_state.camera_left - self.w/2:
+            self.del_self()
+            return
+
+        if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+main_state.window_width+self.w/2 < self.x: return
+        if self.lon_accel!=0:
+            self.lon_speed = self.lon_speed + self.lon_accel + game_framework.frame_time
+            if self.lon_speed < -98: self.lon_speed = -98
+            self.y = self.y + PIXEL_PER_METER * self.lon_speed * game_framework.frame_time
+        self.x = self.x + self.lat_speed * RUN_SPEED_PPS * game_framework.frame_time
+
+        if self.y < -10:    # 추락시
+            self.del_self()
+            return
+        if self.hp == 0:
+            shell = Shell(self.x, self.y, 1)
+            server.objects.append(shell)
+
+            game_world.add_object(shell, 4)
+            self.del_self()
+            return
+        elif self.hp < 0 and self.timer <0:
+            self.timer = 100
+        else:
+            self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 2
+    def draw(self):
+        if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
+
+        if self.hp < 0:
+            self.image.clip_composite_draw(0,192,16,16,-(100-self.timer) * 3.141592 / 270, '', self.x - main_state.camera_left, self.y- main_state.camera_bottom, self.w, self.h)
+            return
+
+        if(self.right):
+            self.image.clip_draw((7-int(self.frame)) * 16, 64, 16, 16, self.x - main_state.camera_left, self.y- main_state.camera_bottom, self.w, self.h)
+        else:
+            self.image.clip_draw(int(self.frame) * 16, 192, 16, 16, self.x - main_state.camera_left, self.y- main_state.camera_bottom,self.w,self.h)
+
+    def del_self(self):
+            server.enemys.remove(self)
+            game_world.remove_object(self)
+
 class Turtle(Enemy):
     def __init__(self, x, y, wing):
         super(Turtle, self).__init__(x, y)
@@ -112,7 +172,7 @@ class Turtle(Enemy):
         if self.x < main_state.camera_left - self.w/2:
             self.del_self()
             return
-        if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
+        if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+main_state.window_width+self.w/2 < self.x: return
 
         if self.lon_accel!=0:
             self.lon_speed = self.lon_speed + self.lon_accel + game_framework.frame_time
@@ -125,7 +185,14 @@ class Turtle(Enemy):
             self.del_self()
             return
         if self.hp == 0:
-            self.frame = 5
+
+
+            shell = Shell(self.x, self.y-self.h/2, 0)
+            server.objects.append(shell)
+
+            game_world.add_object(shell, 4)
+            self.del_self()
+            return
         elif self.hp < 0 and self.timer <0:
             self.timer = 100
         else:
@@ -133,7 +200,7 @@ class Turtle(Enemy):
             if self.wing:
                 self.frame+=3
     def draw(self):
-        if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
+        if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+main_state.window_width+self.w/2 < self.x: return
 
         if self.hp < 0:
             self.image.clip_composite_draw(0,208,16,32,-(100-self.timer) * 3.141592 / 270, '', self.x - main_state.camera_left, self.y- main_state.camera_bottom, self.w, self.h)
@@ -171,33 +238,39 @@ class Hammer(Enemy):
         if self.x < main_state.camera_left - self.w/2:
             self.del_self()
             return
-        if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
+        if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+main_state.window_width+self.w/2 < self.x: return
 
         if self.lon_accel!=0:
             self.lon_speed = self.lon_speed + self.lon_accel + game_framework.frame_time
             if self.lon_speed < -98: self.lon_speed = -98
             self.y = self.y + PIXEL_PER_METER * self.lon_speed * game_framework.frame_time
 
-        if (self.right == 0) and (game_world.objects[4][0].x > self.x):
+        if (self.right == 0) and (server.character.x > self.x):
             self.right = True
-        elif (self.right == 1) and (game_world.objects[4][0].x < self.x):
+        elif (self.right == 1) and (server.character.x < self.x):
             self.right = False
-        self.skill_cooltime = (self.skill_cooltime + 1) % 100
-        if self.skill_cooltime == 0:
+        self.skill_cooltime = (self.skill_cooltime + 1) % 1000
+        if self.skill_cooltime % 200 == 0:
             pass #물건 투척
-        if (self.skill_cooltime+randint(1,100+1))%10 == 0:
-            pass #점프하는 코드 추가
+        if (self.skill_cooltime)%500== 0:
+            self.y += 1
+            self.lon_speed = 10
         if self.y < -10:  # 추락시
             self.del_self()
             return
         if self.hp == 0:
-            self.frame = 5
+            shell = Shell(self.x, self.y-self.h/2, 0)
+            server.objects.append(shell)
+
+            game_world.add_object(shell, 4)
+            self.del_self()
+            return
         elif self.timer < 0 and self.hp < 0:
             self.timer = 100
         else:
             self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 2
     def draw(self):
-        if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
+        if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+main_state.window_width+self.w/2 < self.x: return
 
         if self.hp < 0:
             self.image.clip_composite_draw(0,160,16,32,-(100-self.timer) * 3.141592 / 270, '', self.x - main_state.camera_left, self.y- main_state.camera_bottom, self.w, self.h)
@@ -226,7 +299,7 @@ class Boss(Enemy):
         if self.x < main_state.camera_left - self.w/2:
             self.del_self()
             return
-        if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
+        if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+main_state.window_width+self.w/2 < self.x: return
 
         if self.lon_accel!=0:
             self.lon_speed = self.lon_speed + self.lon_accel + game_framework.frame_time
@@ -234,10 +307,11 @@ class Boss(Enemy):
             self.y = self.y + PIXEL_PER_METER * self.lon_speed * game_framework.frame_time
 
         self.x = self.x + self.lat_speed
-        if self.right == 0  and game_world.objects[4][0].x > self.x:
+        if self.right == 0  and server.character.x > self.x:
             self.right = True
-        elif self.right == 1 and game_world.objects[4][0].x < self.x:
+        elif self.right == 1 and server.character.x < self.x:
             self.right = False
+
         self.skill_cooltime = (self.skill_cooltime + 1) % 500
         if self.skill_cooltime==0 :
             i = randint(0,2)
@@ -262,7 +336,7 @@ class Boss(Enemy):
         else:
             self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
     def draw(self):
-        if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
+        if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+main_state.window_width+self.w/2 < self.x: return
         if (self.right):
             self.image.clip_draw((6 - int(self.frame)*2) * 16, 0, 32, 32, self.x - main_state.camera_left, self.y- main_state.camera_bottom, self.w, self.h)
         else:

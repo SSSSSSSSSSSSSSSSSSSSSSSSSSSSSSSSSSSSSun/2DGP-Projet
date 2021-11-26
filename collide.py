@@ -2,7 +2,8 @@ import main_state
 import game_world
 import server
 
-from object import *
+from object import BossFire
+from enemy import Boss
 
 
 PIXEL_PER_METER = (50.0 / 1.0)
@@ -151,13 +152,11 @@ def collide_enemy(a, enemy):
             pos = a_position_than_b(a,enemy)
     if pos == UP:  # 윗 충돌로 간주
         a.lon_speed = 10
+        if type(enemy) == type(Boss(0,0)):
+            a.lon_speed += enemy.lon_speed
         enemy.hp -=1
     else:
-        if a.no_damege_timer==0:
-            a.no_damege_timer = 1000
-            a.power_up -= 1
-            if not a.power_up:
-                a.h /= 2
+        a.damaged()
 
 
 def collide_fire_block(fire, block):
@@ -186,6 +185,7 @@ def collide_enemy_block(enemy, block):
         enemy.lon_speed = 0
         enemy.lon_accel = 0
         enemy.y = top_b + enemy.h/2
+        enemy.jump = False
         return
     if pos == DOWN: # 아랫 충돌로 간주
         enemy.lon_speed = 0
@@ -221,5 +221,14 @@ def collide_object_block(object, block):
         object.lon_speed = 0
         object.y = bottom_b - object.h/2
         return
+    elif pos == LEFT: # 왼 충돌로 간주
+
+        object.x = left_b - object/2  -1
+
+
+    elif pos == RIGHT: # 오른 충돌로 간주
+
+        object.x = right_b + object.w/2 +1
+
     object.lat_speed = -object.lat_speed
 
