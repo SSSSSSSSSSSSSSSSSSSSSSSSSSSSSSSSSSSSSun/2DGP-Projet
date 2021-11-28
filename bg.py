@@ -97,6 +97,7 @@ class Big_tree(BGround):
     def del_self(self):
         server.bg.remove(self)
         game_world.remove_object(self)
+
 class tree(BGround):
     def __init__(self,x,y):
         super(tree, self).__init__(x,y)

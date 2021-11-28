@@ -2,7 +2,8 @@ import main_state
 import game_world
 import server
 
-from object import BossFire
+from object import *
+from block import *
 from enemy import Boss
 
 
@@ -106,6 +107,14 @@ def tall_a_b_position_than_b(a,b):
 def collide_block(a, block):
     left_a, bottom_a, right_a, top_a = a.get_bb()
     left_b, bottom_b, right_b, top_b = block.get_bb()
+
+    if type(block) == type(Coin(0,0)):
+        main_state.score += 100
+        block.del_self()
+        return
+    if type(block) == type(Flag(0,0,0)) or type(block) == type(Axe(0,0)):
+        return
+#         clear_state로 넘어감
     if a.h >= a.w*2:
         pos = tall_a_position_than_b(a,block)
     else:
@@ -209,8 +218,12 @@ def collide_object_block(object, block):
     left_a, bottom_a, right_a, top_a = object.get_bb()
     left_b, bottom_b, right_b, top_b = block.get_bb()
     pos = a_position_than_b(object,block)
+    if type(object) == type(Obj_Hammer(0,0,0,0)):
+        return
+
     if type(object) == type(BossFire(0,0,0,0)):
         object.del_self()
+        return
 
     if pos == UP:  # 윗 충돌로 간주
         object.lon_speed = 0

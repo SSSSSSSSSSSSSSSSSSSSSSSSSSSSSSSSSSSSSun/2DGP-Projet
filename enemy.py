@@ -251,7 +251,11 @@ class Hammer(Enemy):
             self.right = False
         self.skill_cooltime = (self.skill_cooltime + 1) % 1000
         if self.skill_cooltime % 200 == 0:
-            pass #물건 투척
+
+            hammer = Obj_Hammer(self.x, self.y, 98*1.5, self.right)
+            server.objects.append(hammer)
+            game_world.add_object(hammer, 3)
+
         if (self.skill_cooltime)%500== 0:
             self.y += 1
             self.lon_speed = 10

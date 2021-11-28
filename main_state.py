@@ -10,7 +10,7 @@ import server
 from collide import *
 debug = False
 
-
+score = 0
 
 
 
@@ -149,6 +149,7 @@ def update():
 
     # 오브젝트 - 블록
     for object in server.objects:
+
         x = (object.x//PIXEL_PER_METER) * PIXEL_PER_METER
         on_block = False
         if x in server.blocks:

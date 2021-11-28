@@ -14,6 +14,9 @@ CHARFIRE_SPEED_PPS = PIXEL_PER_METER * CHARFIRE_SPEED_MPS
 BOSSFIRE_SPEED_MPS = 5    # m/s
 BOSSFIRE_SPEED_PPS = PIXEL_PER_METER * BOSSFIRE_SPEED_MPS
 
+HAMMER_SPEED_MPS = 2   # m/s
+HAMMER_SPEED_PPS = PIXEL_PER_METER * HAMMER_SPEED_MPS
+
 MUSHROOM_SPEED_MPS = 1
 MUSHROOM_SPEED_PPS = PIXEL_PER_METER * MUSHROOM_SPEED_MPS
 
@@ -90,6 +93,38 @@ class BossFire(Object):
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 2
     def draw(self):
         self.image.clip_draw((4 + int(self.frame)*2)*16,48,24,8,self.x - main_state.camera_left,self.y- main_state.camera_bottom,self.w,self.h)
+    def do(self, character):
+        character.damaged()
+    def del_self(self):
+
+        server.objects.remove(self)
+        game_world.remove_object(self)
+
+class Obj_Hammer(Object):
+    def __init__(self, x, y, lon_speed, right):
+        super(Obj_Hammer, self).__init__(x, y)
+        self.w = 1.0 * PIXEL_PER_METER
+        self.h = 1.0 * PIXEL_PER_METER
+        self.lon_speed = lon_speed
+        if right == True: self.dir = 1
+        else: self.dir = -1
+
+    def get_bb(self):
+        return self.x - self.w / 2, self.y - self.h / 2, self.x + self.w / 2, self.y + self.h / 2
+
+    def update(self):
+        if self.x < main_state.camera_left - self.w/2 or main_state.camera_left + main_state.window_width+self.w/2 < self.x or self.y < -10:  # 추락 혹은 맵 이탈시
+            self.del_self()
+        if self.y < 0:
+            self.del_self()
+
+        self.x = self.x + self.dir *HAMMER_SPEED_PPS* game_framework.frame_time
+        self.lon_speed = self.lon_speed - 147.5 * game_framework.frame_time
+        if self.lon_speed < -98: self.lon_speed = -98
+        self.y = self.y + self.lon_speed * game_framework.frame_time*5
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
+    def draw(self):
+        self.image.clip_draw((4 + int(self.frame))*16,64,16,16,self.x - main_state.camera_left,self.y- main_state.camera_bottom,self.w,self.h)
     def do(self, character):
         character.damaged()
     def del_self(self):
@@ -216,3 +251,4 @@ class Shell(Object):
     def del_self(self):
         server.objects.remove(self)
         game_world.remove_object(self)
+
