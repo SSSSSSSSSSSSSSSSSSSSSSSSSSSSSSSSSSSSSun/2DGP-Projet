@@ -294,7 +294,7 @@ next_state_table = {
     }
 
 class Character:
-    Character.image = None
+    image = None
     def __init__(self):
         self.x, self.y = 1600 // 2, 90
         if Character.image == None:
@@ -330,8 +330,10 @@ class Character:
         game_world.add_object(fire, 4)
 
     def update(self):
-
+        return
         self.cur_state.do(self)
+
+
 
         if self.lon_accel!=0:
             self.lon_speed = self.lon_speed + self.lon_accel + game_framework.frame_time
@@ -374,16 +376,24 @@ class Character:
 
             if self.cur_state in next_state_table and key_event in next_state_table[self.cur_state]:
                 self.add_event(key_event)
-
+        elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_w): self.y += 50
+        elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_s): self.y -= 50
+        elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_d): self.x += 50
+        elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_a): self.x -= 50
         elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_z) and not self.jump:
+            return
             self.y += 1
             self.lon_accel = 9.8+4.95
             self.jump_timer = 60
             self.jump = True
         elif (event.type, event.key) == (SDL_KEYUP, SDLK_z) and self.jump_timer != 0:
-
+            return
             self.lon_accel -= 0.1475 * self.jump_timer
             self.jump_timer = 0
+
+        main_state.camera_left = self.x - 6 * PIXEL_PER_METER
+
+        main_state.camera_bottom = self.y - 6 * PIXEL_PER_METER
     def damaged(self):
         if self.no_damege_timer==0:
             self.no_damege_timer = 1000
