@@ -351,9 +351,10 @@ class Character:
 
         main_state.camera_bottom = self.y - 6 * PIXEL_PER_METER
 
-        if main_state.camera_bottom < 0: main_state.camera_bottom = 0
+        if main_state.camera_bottom < PIXEL_PER_METER*2: main_state.camera_bottom = PIXEL_PER_METER*2
         if server.max_height - main_state.camera_bottom <= main_state.window_width:
             main_state.camera_bottom = server.max_height - main_state.window_width
+
 
 
 

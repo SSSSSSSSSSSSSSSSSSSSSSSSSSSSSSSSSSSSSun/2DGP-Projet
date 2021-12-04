@@ -148,6 +148,7 @@ class Mushroom(Object):
         if self.timer >0:
             self.timer -= 1
             self.y += 1
+            return
 
         self.x = self.x + self.lat_speed * game_framework.frame_time
 

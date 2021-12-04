@@ -206,7 +206,7 @@ class Pipe(Block):
         else:
             nx=1
             ny=1
-        self.image.clip_draw(64+16*nx,128-server.level*32-16*ny,16,16,self.x - main_state.camera_left,self.y- main_state.camera_bottom,self.w,self.h)
+        self.image.clip_draw(64 +32*x +16*nx, 128 -server.level*32 - 16*ny,16,16,self.x - main_state.camera_left,self.y- main_state.camera_bottom,self.w,self.h)
 
     def del_self(self):
         server.blocks[self.x].remove(self)

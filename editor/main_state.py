@@ -151,7 +151,7 @@ def build(x,y):
         if select == 0:
             input = load_state.Platform(x,y,0)
         if select == 1:
-            input = load_state.Platform(x,y,0)
+            input = load_state.Platform(x,y,1)
         if select == 2:
             input = load_state.Brick(x,y,0)
         if select == 3:
@@ -173,14 +173,21 @@ def build(x,y):
         if not x in server.blocks:
             server.blocks[x] = []
         else:
+            for i in server.blocks[x]:
+                if i.x== input.x and i.y == input.y:
+                    return
             server.blocks[x].append(input)
         game_world.add_object(input,3)
     elif obj_select == 2:
+
         input = load_state.Pipe(x,y,select//4,select%4)
 
         if not x in server.blocks:
             server.blocks[x] = []
         else:
+            for i in server.blocks[x]:
+                if i.x== input.x and i.y == input.y:
+                    return
             server.blocks[x].append(input)
         game_world.add_object(input,3)
     elif obj_select == 3:
@@ -251,9 +258,6 @@ def save():
         pickle.dump(server.char_fires, f)
     with open('map\\%d_%d\\objects.pickle' % (server.stage,server.level), 'wb') as f:
         pickle.dump(server.objects, f)
-    data = [server.max_width, server.max_height, server.stage, server.level]
-    with open('map\\%d_%d\\data.pickle' % (server.stage,server.level), 'wb') as f:
-        pickle.dump(data, f)
 
 
 def update():

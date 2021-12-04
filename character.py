@@ -14,7 +14,7 @@ MAX_SPEED_MPS = 5
 
 
 # Action Speed
-TIME_PER_ACTION = 0.5
+TIME_PER_ACTION = 9.0
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 3
 
@@ -294,7 +294,7 @@ next_state_table = {
     }
 
 class Character:
-    Character.image = None
+    image = None
     def __init__(self):
         self.x, self.y = 1600 // 2, 90
         if Character.image == None:
@@ -346,8 +346,13 @@ class Character:
             pass
         elif self.x - main_state.camera_left > 6 * PIXEL_PER_METER:
             main_state.camera_left = self.x - 6 * PIXEL_PER_METER
-
         main_state.camera_bottom = self.y - 6 * PIXEL_PER_METER
+        if main_state.camera_bottom <= 2 * PIXEL_PER_METER:
+            main_state.camera_bottom = 2 * PIXEL_PER_METER
+
+
+        if self.y <= 0:
+            self.power_up = -1
 
         if main_state.camera_bottom < 0: main_state.camera_bottom = 0
         if server.max_height - main_state.camera_bottom <= main_state.window_width:
@@ -377,7 +382,7 @@ class Character:
 
         elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_z) and not self.jump:
             self.y += 1
-            self.lon_accel = 9.8+4.95
+            self.lon_accel = 9.8*1.2
             self.jump_timer = 60
             self.jump = True
         elif (event.type, event.key) == (SDL_KEYUP, SDLK_z) and self.jump_timer != 0:

@@ -1,5 +1,7 @@
 import game_framework
 import main_state
+import server
+import game_world
 from pico2d import *
 
 PIXEL_PER_METER = (50.0 / 1.0)  # 50 pixel 1meter

@@ -68,9 +68,6 @@ def load():
         server.blocks = pickle.load(f)
     with open('map\\%d_%d\\objects.pickle' % (server.stage,server.level), 'rb') as f:
         server.objects = pickle.load(f)
-#     with open('map\\%d_%d\\data.pickle' % (server.stage,server.level), 'rb') as f:
-#         data = pickle.load(f)
-#         server.max_width, server.max_height, server.stage, server.level = data[0], data[1], data[2], data[3]
 
 #=====임시=========
 def handle_events():

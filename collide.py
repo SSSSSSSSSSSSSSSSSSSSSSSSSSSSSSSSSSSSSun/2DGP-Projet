@@ -135,12 +135,12 @@ def collide_block(a, block):
         return
     elif pos == LEFT: # 왼 충돌로 간주
 
-        a.x = left_b - a.w/2 + a.w / 10 -1
+        a.x = left_b - a.w/2 + a.w / 10 -2
 
         return
     elif pos == RIGHT: # 오른 충돌로 간주
 
-        a.x = right_b + a.w/2 - a.w / 10 +1
+        a.x = right_b + a.w/2 - a.w / 10 +2
         return
     a.lon_speed = 0
     a.lon_accel = 0
