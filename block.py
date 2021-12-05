@@ -61,7 +61,8 @@ class Brick(Block):
             self.del_self()
             return
     def do(self):
-        pass
+        if(server.character.power_up):
+            self.del_self()
     def draw(self):
         if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
         self.image.clip_draw(16+self.type*16,128-server.stage*16,16,16,self.x - main_state.camera_left,self.y- main_state.camera_bottom,self.w,self.h)
@@ -131,6 +132,7 @@ class Flag(Block):
         self.h = 1 * PIXEL_PER_METER
         self.kind = kind
 
+
     def get_bb(self):
 
         return self.x - self.w / 2, self.y - self.h / 2, self.x + self.w / 2, self.y + self.h / 2
@@ -142,7 +144,11 @@ class Flag(Block):
         pass
 
     def draw(self):
-        self.image.clip_draw(16*self.kind, 0, 16,16,self.x - main_state.camera_left,self.y- main_state.camera_bottom,self.w,self.h)
+        if self.kind != 2:
+            self.image.clip_draw(16*self.kind, 0, 16,16,self.x - main_state.camera_left,self.y- main_state.camera_bottom,self.w,self.h)
+        else:
+            self.image.clip_draw(16*self.kind, 0, 16,16,self.x - main_state.camera_left+self.w/2,self.y- main_state.camera_bottom,self.w,self.h)
+
     def del_self(self):
         server.objects.remove(self)
         game_world.remove_object(self)
@@ -158,13 +164,13 @@ class Axe(Block):
         return self.x - self.w / 2, self.y - self.h / 2, self.x + self.w / 2, self.y + self.h / 2
 
     def update(self):
-        pass
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
 
     def do(self):
         pass
 
     def draw(self):
-        self.image.clip_draw(16*server.level, 32, 16,16,self.x - main_state.camera_left,self.y- main_state.camera_bottom,self.w,self.h)
+        self.image.clip_draw(int(self.frame)*16*server.level, 32, 16,16,self.x - main_state.camera_left,self.y- main_state.camera_bottom,self.w,self.h)
     def del_self(self):
         server.objects.remove(self)
         game_world.remove_object(self)

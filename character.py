@@ -334,7 +334,7 @@ class Character:
         self.cur_state.do(self)
 
         if self.lon_accel!=0:
-            self.lon_speed = self.lon_speed + self.lon_accel + game_framework.frame_time
+            self.lon_speed = self.lon_speed + self.lon_accel * game_framework.frame_time
             if self.lon_speed < -98: self.lon_speed = -98
         self.y = self.y + PIXEL_PER_METER * self.lon_speed * game_framework.frame_time
         if self.jump_timer != 0:
@@ -382,12 +382,12 @@ class Character:
 
         elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_z) and not self.jump:
             self.y += 1
-            self.lon_accel = 9.8*1.2
+            self.lon_speed = 9.8
             self.jump_timer = 60
             self.jump = True
         elif (event.type, event.key) == (SDL_KEYUP, SDLK_z) and self.jump_timer != 0:
 
-            self.lon_accel -= 0.1475 * self.jump_timer
+            self.lon_accel -= 9.8 * self.jump_timer
             self.jump_timer = 0
     def damaged(self):
         if self.no_damege_timer==0:

@@ -1,6 +1,8 @@
 import main_state
 import game_world
 import server
+import game_framework
+import clear_state
 
 from object import *
 from block import *
@@ -112,9 +114,9 @@ def collide_block(a, block):
         main_state.score += 100
         block.del_self()
         return
-    if type(block) == type(Flag(0,0,0)) or type(block) == type(Axe(0,0)):
-        return
-#         clear_state로 넘어감
+    if (type(block) == type(Flag(0,0,0)) and block.kind != 2) or type(block) == type(Axe(0,0)):
+        game_framework.change_state(clear_state)
+#
     if a.h >= a.w*2:
         pos = tall_a_position_than_b(a,block)
     else:

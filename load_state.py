@@ -28,7 +28,7 @@ def enter():
     server.max_height = 30 * PIXEL_PER_METER
     rightest = max(server.blocks.keys())
     server.max_width = rightest
-
+#     server.character.x = server.max_width - PIXEL_PER_METER * 15
     game_world.add_object(server.character,5)
     game_world.add_objects(server.bg, 1)
     game_world.add_object(server.bg_image, 0)
@@ -38,7 +38,7 @@ def enter():
         game_world.add_objects(i, 3)
 
     global image
-    image = load_image('resource\\Object_sprite.png')
+    image = load_image('resource\\black_BG.png')
 
 def load():
     with open('map\\%d_%d\\character.pickle' % (server.stage,server.level), 'rb') as f:
@@ -81,6 +81,6 @@ def update():
 def draw():
     clear_canvas()
     global image
-    image.draw(400, 300)
+    image.clip_draw(0,0,4,4,main_state.window_width/2,main_state.window_height/2,main_state.window_width,main_state.window_height)
     update_canvas()
 

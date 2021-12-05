@@ -6,6 +6,7 @@ from pico2d import *
 import game_framework
 import load_state
 import game_world
+import death_state
 import server
 from collide import *
 debug = False
@@ -97,7 +98,7 @@ def update():
 
     if not on_block:
         server.character.jump = True
-        server.character.lon_accel = -0.1475
+        server.character.lon_accel = -9.8
     # 적 - 블록
 
     for enemy in server.enemys:
@@ -169,7 +170,7 @@ def update():
             object.lon_accel = -0.1475
 
     if server.character.power_up < 0:
-        game_framework.change_state(load_state)
+        game_framework.change_state(death_state)
 
 
 

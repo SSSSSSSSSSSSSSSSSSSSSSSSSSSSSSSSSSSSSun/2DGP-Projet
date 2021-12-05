@@ -8,7 +8,7 @@ import collide
 
 PIXEL_PER_METER = (50.0 / 1.0)  # 50 pixel 1meter
 
-CHARFIRE_SPEED_MPS = 5    # m/s
+CHARFIRE_SPEED_MPS = 10    # m/s
 CHARFIRE_SPEED_PPS = PIXEL_PER_METER * CHARFIRE_SPEED_MPS
 
 BOSSFIRE_SPEED_MPS = 5    # m/s
@@ -69,8 +69,9 @@ class CharFire(Object):
     def draw(self):
         self.image.clip_draw((4 + int(self.frame))*16,0,8,8,self.x - main_state.camera_left,self.y- main_state.camera_bottom,self.w,self.h)
     def del_self(self):
-        server.char_fires.remove(self)
-        game_world.remove_object(self)
+        if self in server.char_fires:
+            server.char_fires.remove(self)
+            game_world.remove_object(self)
 
 class BossFire(Object):
     def __init__(self, x, y, lon_speed, right):
