@@ -20,7 +20,7 @@ PIXEL_PER_METER = (50.0 / 1.0)
 
 name = "MainState"
 
-
+time = 200
 camera_left = 0
 camera_bottom = 0
 
@@ -28,8 +28,11 @@ window_width = 800
 window_height = 600
 
 def enter():
+    server.font = load_font('ENCR10B.TTF', int(24*main_state.window_height/600))
     events = None
-    global camera_left, camera_bottom
+    global camera_left, camera_bottom, time,score
+    time = 200
+    score = 0
     camera_left = 0
     camera_down = 0
 
@@ -64,6 +67,13 @@ def handle_events():
 def update():
     for game_object in game_world.all_objects():
         game_object.update()
+    global time
+    time -= game_framework.frame_time
+
+    if time < 0:
+        server.character.power_up = -1
+
+
     # 주인공 - 적
     for enemy in server.enemys:
         if enemy.hp > 0:
@@ -178,6 +188,12 @@ def draw():
     clear_canvas()
     for game_object in game_world.all_objects():
         game_object.draw()
+    w,h = main_state.window_width, main_state.window_height
+    server.font.draw(0.01*w, 0.95*h, 'score', (255,255,255))
+    server.font.draw(0.1*w, 0.9*h, '%d' % (score), (255,255,255))
+    server.font.draw(0.89*w, 0.95*h, 'time', (255,255,255))
+    server.font.draw(0.9*w, 0.9*h, '%d' % (int(time)), (255,255,255))
+
 
     if debug:
         l, b, r, t = server.character.get_bb()

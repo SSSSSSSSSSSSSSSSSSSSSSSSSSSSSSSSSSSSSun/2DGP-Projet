@@ -1,17 +1,18 @@
 from pico2d import *
 import game_framework
-import load_state
 import main_state
+import title_state
 import server
 
-
+time = 0
 image = None
 
 def enter():
-    global image
-    server.life = 3
-    image = load_image('resource\\title.png')
-    server.font = load_font('ENCR10B.TTF', int(32*main_state.window_height/600))
+    server.clear()
+    game_world.clear()
+    global image, time
+    image = load_image('resource\\black_BG.png')
+    time = 0
 def handle_events():
     events = get_events()
 
@@ -20,18 +21,21 @@ def handle_events():
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
                 game_framework.quit()
-        elif event.type == SDL_KEYDOWN:
-                game_framework.change_state(load_state)
 
 def exit():
     pass
 
 def update():
-    pass
+    global time
+    if time < 5.0:
+        game_framework.change_state(title_state)
+
+    time += game_framework.frame_time
+
 def draw():
     w,h = main_state.window_width, main_state.window_height
     clear_canvas()
 
     image.clip_draw(0,0,256,240,w/2,h/2,w,h)
-    server.font.draw(w/4,3*h/8,'press any key to start',(255,255,255))
+    server.font.draw(3*w/8,1*h/2,'Game Over',(255,255,255))
     update_canvas()

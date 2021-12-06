@@ -65,7 +65,9 @@ def handle_events():
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
                 game_framework.quit()
+        else:
 
+            server.character.handle_event(event)
 
 def exit():
     global image
@@ -81,6 +83,10 @@ def update():
 def draw():
     clear_canvas()
     global image
-    image.clip_draw(0,0,4,4,main_state.window_width/2,main_state.window_height/2,main_state.window_width,main_state.window_height)
+    w, h = main_state.window_width, main_state.window_height
+    image.clip_draw(0,0,4,4,w/2,h/2,w,h)
+    server.font.draw(7*w/16,5*h/8,'%d-%d' % (server.stage, server.level),(255,255,255))
+    server.font.draw(15*w/32,h/2,'X  %d' % (server.life),(255,255,255))
+    server.character.image.clip_draw(0,112,16,32, 3/8 * w,h/2 , server.character.w, server.character.h*2)
     update_canvas()
 

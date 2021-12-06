@@ -3,6 +3,7 @@ import game_framework
 import load_state
 import main_state
 import game_world
+import gameover_state
 import character
 import server
 PIXEL_PER_METER = (50.0 / 1.0)
@@ -11,7 +12,7 @@ dx = 0
 time = 0
 
 def enter():
-    global dx, init
+    global dx, time
 
 
 
@@ -28,7 +29,9 @@ def handle_events():
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
                 game_framework.quit()
+        else:
 
+            server.character.handle_event(event)
 def exit():
     pass
 
@@ -44,7 +47,11 @@ def update():
     elif time<300:
         server.character.y -= 1.5
     else:
-        game_framework.change_state(load_state)
+        server.life -= 1
+        if server.life < 0:
+            game_framework.change_state(gameover_state)
+        else:
+            game_framework.change_state(load_state)
 
     time += 1
 def draw():

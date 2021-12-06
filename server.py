@@ -11,7 +11,9 @@ max_height = None
 
 stage = 1
 level = 1
-
+life = None
+font = None
+small_font = None
 def clear():
     global character, enemys, char_fires, objects, blocks
     character = None

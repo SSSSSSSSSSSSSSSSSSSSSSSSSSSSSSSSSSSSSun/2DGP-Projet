@@ -28,7 +28,9 @@ def handle_events():
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
                 game_framework.quit()
+        else:
 
+            server.character.handle_event(event)
 def exit():
     pass
 

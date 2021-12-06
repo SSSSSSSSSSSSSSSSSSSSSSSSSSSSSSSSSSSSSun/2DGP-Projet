@@ -63,6 +63,7 @@ class Brick(Block):
     def do(self):
         if(server.character.power_up):
             self.del_self()
+            main_state.score += 10
     def draw(self):
         if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
         self.image.clip_draw(16+self.type*16,128-server.stage*16,16,16,self.x - main_state.camera_left,self.y- main_state.camera_bottom,self.w,self.h)
@@ -91,6 +92,7 @@ class Box(Block):
             item = self.contents.pop()
             server.objects.append(item)
             game_world.add_object(item,1)
+
     def draw(self):
         if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
         if len(self.contents) > 0:
@@ -117,7 +119,7 @@ class Coin(Block):
 
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
     def do(self):
-        pass
+        main_state.score += 100
     def draw(self):
         if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
         self.image.clip_draw(int(self.frame)*16,16,16,16,self.x - main_state.camera_left,self.y- main_state.camera_bottom,self.w,self.h)

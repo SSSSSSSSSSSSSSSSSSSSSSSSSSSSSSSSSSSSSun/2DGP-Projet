@@ -86,6 +86,7 @@ class Goomba(Enemy):
             self.image.clip_draw(int(self.frame) * 16, 240, 16, 16, self.x - main_state.camera_left, self.y- main_state.camera_bottom,self.w,self.h)
 
     def del_self(self):
+            main_state.score += 50
             server.enemys.remove(self)
             game_world.remove_object(self)
 
@@ -146,8 +147,9 @@ class Black_Goomba(Enemy):
             self.image.clip_draw(int(self.frame) * 16, 192, 16, 16, self.x - main_state.camera_left, self.y- main_state.camera_bottom,self.w,self.h)
 
     def del_self(self):
-            server.enemys.remove(self)
-            game_world.remove_object(self)
+        main_state.score += 50
+        server.enemys.remove(self)
+        game_world.remove_object(self)
 
 class Turtle(Enemy):
     def __init__(self, x, y, wing):
@@ -211,8 +213,9 @@ class Turtle(Enemy):
         else:
             self.image.clip_draw(int(self.frame) * 16, 208, 16, 32, self.x - main_state.camera_left, self.y- main_state.camera_bottom, self.w, self.h)
     def del_self(self):
-            server.enemys.remove(self)
-            game_world.remove_object(self)
+        main_state.score += 50
+        server.enemys.remove(self)
+        game_world.remove_object(self)
 
 class Hammer(Enemy):
     def __init__(self,x,y):
@@ -285,8 +288,9 @@ class Hammer(Enemy):
         else:
             self.image.clip_draw(int(self.frame) * 16, 160, 16, 32, self.x - main_state.camera_left, self.y- main_state.camera_bottom, self.w, self.h)
     def del_self(self):
-            server.enemys.remove(self)
-            game_world.remove_object(self)
+        server.enemys.remove(self)
+        game_world.remove_object(self)
+        main_state.score += 100
 
 class Boss(Enemy):
     def __init__(self, x, y):
@@ -346,5 +350,6 @@ class Boss(Enemy):
         else:
             self.image.clip_draw(int(self.frame) * 32, 128, 32, 32, self.x -main_state.camera_left, self.y- main_state.camera_bottom, self.w, self.h)
     def del_self(self):
-            server.enemys.remove(self)
-            game_world.remove_object(self)
+        server.enemys.remove(self)
+        game_world.remove_object(self)
+        main_state.score += 1000
