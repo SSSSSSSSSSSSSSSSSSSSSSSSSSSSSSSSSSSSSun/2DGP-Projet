@@ -40,9 +40,9 @@ class Platform(Block):
         if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
 
         if self.type == 0:
-            self.image.clip_draw(0,128-server.stage*16,16,16,self.x - main_state.camera_left,self.y- main_state.camera_bottom,self.w,self.h)
+            self.image.clip_draw(0,128-server.level*16,16,16,self.x - main_state.camera_left,self.y- main_state.camera_bottom,self.w,self.h)
         if self.type == 1:
-            self.image.clip_draw(48,128-server.stage*16,16,16,self.x - main_state.camera_left,self.y- main_state.camera_bottom,self.w,self.h)
+            self.image.clip_draw(48,128-server.level*16,16,16,self.x - main_state.camera_left,self.y- main_state.camera_bottom,self.w,self.h)
     def del_self(self):
         server.blocks[self.x].remove(self)
         game_world.remove_object(self)
@@ -66,7 +66,7 @@ class Brick(Block):
             main_state.score += 10
     def draw(self):
         if self.x < main_state.camera_left-self.w/2 and main_state.camera_left+800+self.w/2 < self.x: return
-        self.image.clip_draw(16+self.type*16,128-server.stage*16,16,16,self.x - main_state.camera_left,self.y- main_state.camera_bottom,self.w,self.h)
+        self.image.clip_draw(16+self.type*16,128-server.level*16,16,16,self.x - main_state.camera_left,self.y- main_state.camera_bottom,self.w,self.h)
     def del_self(self):
         server.blocks[self.x].remove(self)
         game_world.remove_object(self)

@@ -28,7 +28,7 @@ def enter():
     if server.level == 1:
         server.max_height = 30 * PIXEL_PER_METER
     elif server.level == 2:
-        server.max_height = 15 * PIXEL_PER_METER
+        server.max_height = 18 * PIXEL_PER_METER
     rightest = max(server.blocks.keys())
     server.max_width = rightest
 #     server.character.x = server.max_width - PIXEL_PER_METER * 15

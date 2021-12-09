@@ -13,7 +13,7 @@ init = 0
 on_bgm = False
 bgm = None
 def enter():
-    global dx, init, on_bgm
+    global dx, init, on_bgm,time
     on_bgm = False
 #     bgm = load_music('Area Clear.mp3')
 #     bgm.set_volume(64)
@@ -40,9 +40,16 @@ def exit():
 
 def update():
     global dx, time
-    if server.level <= 3 and server.character.y > 4 * PIXEL_PER_METER :
-        server.character.y -= 1
-    elif dx<100:
+    if server.level <= 3:
+        if server.character.power_up >= 1 and server.character.y-server.character.h/4 > 4 * PIXEL_PER_METER :
+            server.character.y -= 1
+            return
+        elif server.character.power_up == 0 and server.character.y > 4 * PIXEL_PER_METER :
+            server.character.y -= 1
+            return
+
+
+    if dx<100:
 
         server.character.x += 1
         dx += 1
@@ -65,11 +72,13 @@ def draw():
     clear_canvas()
     for game_object in game_world.all_objects():
         if type(game_object) == type(character.Character()):
+            h = 2
+            if server.character.power_up == 0: h = 1
             if server.character.right == True:
-                server.character.image.clip_draw(server.character.frame * 16,  (144-server.character.power_up*32), 16, int(server.character.h*16), server.character.x - main_state.camera_left+int(server.character.w/2), server.character.y- main_state.camera_bottom, server.character.w,server. character.h)
+                server.character.image.clip_draw(server.character.frame * 16,  (144-server.character.power_up*32), 16, h*16, server.character.x - main_state.camera_left+int(server.character.w/2), server.character.y- main_state.camera_bottom, server.character.w,server. character.h)
 
             else:
-                server.character.image.clip_draw(server.character.frame * 16,  (144-server.character.power_up*32), 16, int(server.character.h*16), server.character.x - main_state.camera_left-int(server.character.w/2), server.character.y- main_state.camera_bottom, server.character.w,server. character.h)
+                server.character.image.clip_draw(server.character.frame * 16,  (144-server.character.power_up*32), 16, h*16, server.character.x - main_state.camera_left-int(server.character.w/2), server.character.y- main_state.camera_bottom, server.character.w,server. character.h)
 
         else:
             game_object.draw()
