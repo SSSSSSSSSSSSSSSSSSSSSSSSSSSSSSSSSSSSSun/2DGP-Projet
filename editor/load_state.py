@@ -26,7 +26,7 @@ def enter():
 
 
     load()
-
+    server.bg_image = Black_BG()
     game_world.add_object(server.character,5)
     game_world.add_object(server.bg_image,0)
     game_world.add_objects(server.bg, 1)

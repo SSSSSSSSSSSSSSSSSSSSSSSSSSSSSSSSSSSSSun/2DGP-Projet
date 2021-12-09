@@ -10,9 +10,13 @@ PIXEL_PER_METER = (50.0 / 1.0)
 dx = 0
 time = 0
 init = 0
+on_bgm = False
+bgm = None
 def enter():
-    global dx, init
-
+    global dx, init, on_bgm
+    on_bgm = False
+#     bgm = load_music('Area Clear.mp3')
+#     bgm.set_volume(64)
 
 
     server.character.frame = 12
@@ -43,7 +47,10 @@ def update():
         server.character.x += 1
         dx += 1
         server.character.frame = dx // 3 + 1
-    elif time<3:
+    elif time<10:
+#         if not on_bgm:
+#             bgm.play(1)
+#             on_bgm = True
         server.character.frame = 0
         time += game_framework.frame_time
     else:

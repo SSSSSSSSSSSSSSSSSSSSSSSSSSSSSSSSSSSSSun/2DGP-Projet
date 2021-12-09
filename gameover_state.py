@@ -6,6 +6,9 @@ import server
 
 time = 0
 image = None
+# bgm = load_music('resource\\Game Over.mp3')
+# bgm.set_volume(64)
+# bgm.play(1)
 
 def enter():
     server.clear()
@@ -23,11 +26,12 @@ def handle_events():
                 game_framework.quit()
 
 def exit():
+#     bgm.stop()
     pass
 
 def update():
     global time
-    if time < 5.0:
+    if time < 8.0:
         game_framework.change_state(title_state)
 
     time += game_framework.frame_time

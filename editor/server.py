@@ -10,7 +10,7 @@ max_width = None
 max_height = None
 
 stage = 1
-level = 1
+level = 2
 
 def clear():
     global character, enemys, char_fires, objects, blocks

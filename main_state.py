@@ -27,19 +27,35 @@ camera_bottom = 0
 window_width = 800
 window_height = 600
 
+bgm = None
+hurry_bgm = None
+on_hurry_bgm = False
+
+
 def enter():
     server.font = load_font('ENCR10B.TTF', int(24*main_state.window_height/600))
     events = None
-    global camera_left, camera_bottom, time,score
+    global camera_left, camera_bottom, time,score,on_hurry_bgm,bgm,hurry_bgm
     time = 200
     score = 0
     camera_left = 0
     camera_down = 0
-
-
+    hurry_bgm= False
+#     if server.level == 1 or server.level == 3:
+#         bgm = load_music('resource\\Super Mario Bros.mp3')
+#         hurry_bgm = load_music('resource\\Hurry - Super Mario Bros.mp3')
+#     if server.level == 2:
+#         bgm = load_music('resource\\Underground.mp3')
+#         hurry_bgm = load_music('resource\\Hurry - Underground.mp3')
+#     if server.level == 4:
+#         bgm = load_music("resource\\King Koopa's Castle.mp3")
+#         hurry_bgm = load_music("resource\\Hurry - castle.mp3")
+#     bgm.set_volume(64)
+#     bgm.repeat_play()
 def exit():
+#     bgm.stop()
+#     hurry_bgm.stop()
     pass
-
 def pause():
     pass
 
@@ -70,6 +86,10 @@ def update():
     global time
     time -= game_framework.frame_time
 
+#     if not on_hurry_bgm and time<100:
+#         bgm.stop()
+#         hurry_bgm.set_volume(64)
+#         hurry_bgm.repeat_play()
     if time < 0:
         server.character.power_up = -1
 
